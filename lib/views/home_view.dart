@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/home_controller.dart';
+import '../controllers/theme_controller.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -11,8 +12,22 @@ class HomeView extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Exam Jyoti'),
         centerTitle: true,
-        backgroundColor: Colors.orange,
-        foregroundColor: Colors.white,
+        actions: [
+          Consumer<ThemeController>(
+            builder: (context, themeController, child) {
+              return IconButton(
+                icon: Icon(
+                  themeController.isDarkMode
+                      ? Icons.light_mode
+                      : Icons.dark_mode,
+                ),
+                onPressed: () {
+                  themeController.toggleTheme();
+                },
+              );
+            },
+          ),
+        ],
       ),
       body: Consumer<HomeController>(
         builder: (context, controller, child) {
