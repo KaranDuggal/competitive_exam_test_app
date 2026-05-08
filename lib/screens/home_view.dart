@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../controllers/home_controller.dart';
-import '../controllers/theme_controller.dart';
+import 'package:go_router/go_router.dart';
+import '../providers/home_controller.dart';
+import '../providers/theme_controller.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -45,7 +46,7 @@ class HomeView extends StatelessWidget {
                 final category = controller.categories[index];
                 return GestureDetector(
                   onTap: () {
-                    // Navigate to quiz list or details
+                    context.push('/subjects/${category.id}');
                   },
                   child: Card(
                     elevation: 4,

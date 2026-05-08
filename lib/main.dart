@@ -1,16 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'controllers/home_controller.dart';
-import 'controllers/theme_controller.dart';
-import 'views/home_view.dart';
-import 'utils/app_themes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'providers/home_controller.dart';
+import 'providers/theme_controller.dart';
+import 'providers/quiz_provider.dart';
+import 'repositories/quiz_repository.dart';
+import 'services/local_json_data_source.dart';
+import 'theme/app_themes.dart';
+import 'utils/app_router.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  final localDataSource = LocalJsonDataSource();
+  final quizRepository = QuizRepository(localDataSource: localDataSource);
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => HomeController()),
-        ChangeNotifierProvider(create: (_) => ThemeController()),
+        ChangeNotifierProvider(create: (_) => ThemeController(prefs)),
+        ChangeNotifierProvider(
+          create: (_) => QuizProvider(repository: quizRepository),
+        ),
       ],
       child: const MyApp(),
     ),
@@ -24,13 +36,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ThemeController>(
       builder: (context, themeController, child) {
-        return MaterialApp(
+        return MaterialApp.router(
           title: 'Exam Jyoti',
           debugShowCheckedModeBanner: false,
           theme: AppThemes.lightTheme,
           darkTheme: AppThemes.darkTheme,
           themeMode: themeController.themeMode,
-          home: const HomeView(),
+          routerConfig: AppRouter.router,
         );
       },
     );
