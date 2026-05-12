@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import '../models/quiz_models.dart';
+import '../models/subject_model.dart';
+import '../models/chapter_model.dart';
+import '../models/quiz_set_model.dart';
+import '../models/question_model.dart';
+import '../models/result_model.dart';
 import '../repositories/quiz_repository.dart';
 
 class QuizProvider extends ChangeNotifier {

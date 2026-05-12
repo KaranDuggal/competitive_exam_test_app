@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../screens/home_view.dart';
-import '../screens/subject_screen.dart';
-import '../screens/chapter_screen.dart';
-import '../screens/quiz_set_screen.dart';
-import '../screens/quiz_instruction_screen.dart';
-import '../screens/quiz_screen.dart';
-import '../screens/result_screen.dart';
-import '../screens/review_screen.dart';
+import '../../screens/home_view.dart';
+import '../../screens/subject_screen.dart';
+import '../../screens/chapter_screen.dart';
+import '../../screens/quiz_set_screen.dart';
+import '../../screens/quiz_instruction_screen.dart';
+import '../../screens/quiz_screen.dart';
+import '../../screens/result_screen.dart';
+import '../../screens/review_screen.dart';
 
 class AppRouter {
   static final router = GoRouter(

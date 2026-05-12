@@ -1,5 +1,9 @@
 import 'package:dio/dio.dart';
-import '../models/quiz_models.dart';
+import '../models/exam_model.dart';
+import '../models/subject_model.dart';
+import '../models/chapter_model.dart';
+import '../models/quiz_set_model.dart';
+import '../models/question_model.dart';
 
 class ApiDataSource {
   final Dio _dio;

@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import '../models/quiz_models.dart';
-
+import '../models/exam_model.dart';
+import '../models/subject_model.dart';
+import '../models/chapter_model.dart';
+import '../models/question_model.dart';
 class LocalJsonDataSource {
   Future<Map<String, dynamic>> _loadJsonData() async {
     final String response = await rootBundle.loadString('assets/data/quiz_data.json');

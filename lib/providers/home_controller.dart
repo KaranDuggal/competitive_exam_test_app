@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/quiz_models.dart';
+import '../models/exam_model.dart';
 import '../repositories/quiz_repository.dart';
 
 class HomeController extends ChangeNotifier {

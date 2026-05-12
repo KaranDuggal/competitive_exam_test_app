@@ -7,9 +7,9 @@ import 'providers/quiz_provider.dart';
 import 'repositories/quiz_repository.dart';
 import 'services/local_json_data_source.dart';
 import 'services/api_data_source.dart';
-import 'theme/app_themes.dart';
-import 'utils/app_router.dart';
-import 'utils/app_config.dart';
+import 'core/theme/app_themes.dart';
+import 'core/router/app_router.dart';
+import 'core/utils/app_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
