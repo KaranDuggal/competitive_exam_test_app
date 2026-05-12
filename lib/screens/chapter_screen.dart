@@ -43,9 +43,9 @@ class _ChapterScreenState extends State<ChapterScreen> {
               return Card(
                 margin: const EdgeInsets.only(bottom: 12),
                 child: ListTile(
-                  title: Text(chapter.title, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  trailing: const Icon(Icons.quiz_outlined),
-                  onTap: () => context.push('/quiz-instruction/${chapter.id}'),
+                  title: Text(chapter.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () => context.push('/quiz-sets/${chapter.id}'),
                 ),
               );
             },

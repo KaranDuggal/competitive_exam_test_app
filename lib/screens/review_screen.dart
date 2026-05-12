@@ -19,7 +19,7 @@ class ReviewScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final question = provider.questions[index];
               final selectedIndex = provider.userAnswers[question.id];
-              final isCorrect = selectedIndex == question.correctAnswerIndex;
+              final isCorrect = selectedIndex == question.correctOption;
 
               return Card(
                 margin: const EdgeInsets.only(bottom: 20),
@@ -45,12 +45,12 @@ class ReviewScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 15),
-                      Text(question.questionText,
+                      Text(question.text,
                           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
                       const SizedBox(height: 15),
                       ...List.generate(question.options.length, (optIndex) {
                         Color? textColor;
-                        if (optIndex == question.correctAnswerIndex) {
+                        if (optIndex == question.correctOption) {
                           textColor = Colors.green;
                         } else if (optIndex == selectedIndex && !isCorrect) {
                           textColor = Colors.red;
@@ -61,7 +61,7 @@ class ReviewScreen extends StatelessWidget {
                           child: Row(
                             children: [
                               Icon(
-                                optIndex == question.correctAnswerIndex
+                                optIndex == question.correctOption
                                     ? Icons.check_circle
                                     : Icons.circle_outlined,
                                 size: 16,
@@ -73,7 +73,7 @@ class ReviewScreen extends StatelessWidget {
                                   question.options[optIndex],
                                   style: TextStyle(
                                     color: textColor,
-                                    fontWeight: optIndex == question.correctAnswerIndex
+                                    fontWeight: optIndex == question.correctOption
                                         ? FontWeight.bold
                                         : null,
                                   ),

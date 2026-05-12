@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../screens/home_view.dart';
 import '../screens/subject_screen.dart';
 import '../screens/chapter_screen.dart';
+import '../screens/quiz_set_screen.dart';
 import '../screens/quiz_instruction_screen.dart';
 import '../screens/quiz_screen.dart';
 import '../screens/result_screen.dart';
@@ -31,17 +32,24 @@ class AppRouter {
         },
       ),
       GoRoute(
-        path: '/quiz-instruction/:chapterId',
+        path: '/quiz-sets/:chapterId',
         builder: (context, state) {
           final chapterId = state.pathParameters['chapterId']!;
-          return QuizInstructionScreen(chapterId: chapterId);
+          return QuizSetScreen(chapterId: chapterId);
         },
       ),
       GoRoute(
-        path: '/quiz/:chapterId',
+        path: '/quiz-instruction/:quizSetId',
         builder: (context, state) {
-          final chapterId = state.pathParameters['chapterId']!;
-          return QuizScreen(chapterId: chapterId);
+          final quizSetId = state.pathParameters['quizSetId']!;
+          return QuizInstructionScreen(quizSetId: quizSetId);
+        },
+      ),
+      GoRoute(
+        path: '/quiz/:quizSetId',
+        builder: (context, state) {
+          final quizSetId = state.pathParameters['quizSetId']!;
+          return QuizScreen(quizSetId: quizSetId);
         },
       ),
       GoRoute(

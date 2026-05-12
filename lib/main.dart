@@ -6,19 +6,22 @@ import 'providers/theme_controller.dart';
 import 'providers/quiz_provider.dart';
 import 'repositories/quiz_repository.dart';
 import 'services/local_json_data_source.dart';
+import 'services/api_data_source.dart';
 import 'theme/app_themes.dart';
 import 'utils/app_router.dart';
+import 'utils/app_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
   final localDataSource = LocalJsonDataSource();
-  final quizRepository = QuizRepository(localDataSource: localDataSource);
+  final apiDataSource = ApiDataSource(baseUrl: AppConfig.baseUrl);
+  final quizRepository = QuizRepository(localDataSource: localDataSource, apiDataSource: apiDataSource);
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => HomeController()),
+        ChangeNotifierProvider(create: (_) => HomeController(quizRepository)),
         ChangeNotifierProvider(create: (_) => ThemeController(prefs)),
         ChangeNotifierProvider(
           create: (_) => QuizProvider(repository: quizRepository),

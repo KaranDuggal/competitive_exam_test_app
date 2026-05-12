@@ -1,26 +1,26 @@
 class ExamModel {
   final String id;
-  final String title;
+  final String name;
   final String icon;
 
   ExamModel({
     required this.id,
-    required this.title,
-    required this.icon,
+    required this.name,
+    this.icon = '📝',
   });
 
   factory ExamModel.fromJson(Map<String, dynamic> json) {
     return ExamModel(
       id: json['id'],
-      title: json['title'],
-      icon: json['icon'],
+      name: json['name'],
+      icon: json['icon'] ?? '📝',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'title': title,
+      'name': name,
       'icon': icon,
     };
   }
@@ -28,31 +28,27 @@ class ExamModel {
 
 class SubjectModel {
   final String id;
-  final String examId;
-  final String title;
+  final String name;
   final String icon;
 
   SubjectModel({
     required this.id,
-    required this.examId,
-    required this.title,
-    required this.icon,
+    required this.name,
+    this.icon = '📚',
   });
 
   factory SubjectModel.fromJson(Map<String, dynamic> json) {
     return SubjectModel(
       id: json['id'],
-      examId: json['examId'],
-      title: json['title'],
-      icon: json['icon'],
+      name: json['name'],
+      icon: json['icon'] ?? '📚',
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'examId': examId,
-      'title': title,
+      'name': name,
       'icon': icon,
     };
   }
@@ -60,56 +56,73 @@ class SubjectModel {
 
 class ChapterModel {
   final String id;
-  final String subjectId;
-  final String title;
+  final String name;
 
   ChapterModel({
     required this.id,
-    required this.subjectId,
-    required this.title,
+    required this.name,
   });
 
   factory ChapterModel.fromJson(Map<String, dynamic> json) {
     return ChapterModel(
       id: json['id'],
-      subjectId: json['subjectId'],
-      title: json['title'],
+      name: json['name'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'subjectId': subjectId,
-      'title': title,
+      'name': name,
+    };
+  }
+}
+
+class QuizSetModel {
+  final String id;
+  final String name;
+
+  QuizSetModel({
+    required this.id,
+    required this.name,
+  });
+
+  factory QuizSetModel.fromJson(Map<String, dynamic> json) {
+    return QuizSetModel(
+      id: json['id'],
+      name: json['name'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
     };
   }
 }
 
 class QuestionModel {
   final String id;
-  final String chapterId;
-  final String questionText;
+  final String text;
   final List<String> options;
-  final int correctAnswerIndex;
+  final int correctOption;
   final String explanation;
 
   QuestionModel({
     required this.id,
-    required this.chapterId,
-    required this.questionText,
+    required this.text,
     required this.options,
-    required this.correctAnswerIndex,
+    required this.correctOption,
     required this.explanation,
   });
 
   factory QuestionModel.fromJson(Map<String, dynamic> json) {
     return QuestionModel(
       id: json['id'],
-      chapterId: json['chapterId'],
-      questionText: json['questionText'],
+      text: json['text'],
       options: List<String>.from(json['options']),
-      correctAnswerIndex: json['correctAnswerIndex'],
+      correctOption: json['correctOption'],
       explanation: json['explanation'],
     );
   }
@@ -117,10 +130,9 @@ class QuestionModel {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'chapterId': chapterId,
-      'questionText': questionText,
+      'text': text,
       'options': options,
-      'correctAnswerIndex': correctAnswerIndex,
+      'correctOption': correctOption,
       'explanation': explanation,
     };
   }

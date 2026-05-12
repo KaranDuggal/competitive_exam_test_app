@@ -1,15 +1,31 @@
 import 'package:flutter/material.dart';
 import '../models/quiz_models.dart';
+import '../repositories/quiz_repository.dart';
 
 class HomeController extends ChangeNotifier {
-  final List<ExamModel> _categories = [
-    ExamModel(id: '1', title: 'UPSC', icon: '🏛️'),
-    ExamModel(id: '2', title: 'SSC', icon: '📝'),
-    ExamModel(id: '3', title: 'Banking', icon: '🏦'),
-    ExamModel(id: '4', title: 'Railways', icon: '🚂'),
-    ExamModel(id: '5', title: 'State PSC', icon: '🗺️'),
-    ExamModel(id: '6', title: 'Police', icon: '👮'),
-  ];
+  final QuizRepository _repository;
+  HomeController(this._repository);
 
+  List<ExamModel> _categories = [];
   List<ExamModel> get categories => _categories;
+
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  String? _error;
+  String? get error => _error;
+
+  Future<void> fetchExams() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    try {
+      _categories = await _repository.getExams();
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }

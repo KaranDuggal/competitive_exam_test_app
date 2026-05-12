@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class QuizInstructionScreen extends StatelessWidget {
-  final String chapterId;
-  const QuizInstructionScreen({super.key, required this.chapterId});
+  final String quizSetId;
+  const QuizInstructionScreen({super.key, required this.quizSetId});
 
   @override
   Widget build(BuildContext context) {
@@ -21,16 +21,16 @@ class QuizInstructionScreen extends StatelessWidget {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            _buildInstructionItem(Icons.help_outline, 'Total Questions: 20'),
-            _buildInstructionItem(Icons.timer_outlined, 'Time Limit: 15 Minutes'),
-            _buildInstructionItem(Icons.check_circle_outline, 'Each correct answer: +1 mark'),
+            _buildInstructionItem(Icons.help_outline, 'Read questions carefully'),
+            _buildInstructionItem(Icons.timer_outlined, 'Multiple choice options'),
+            _buildInstructionItem(Icons.check_circle_outline, 'Submit when finished'),
             _buildInstructionItem(Icons.cancel_outlined, 'No negative marking'),
             const Spacer(),
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: () => context.pushReplacement('/quiz/$chapterId'),
+                onPressed: () => context.pushReplacement('/quiz/$quizSetId'),
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),

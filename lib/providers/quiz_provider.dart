@@ -9,6 +9,7 @@ class QuizProvider extends ChangeNotifier {
 
   List<SubjectModel> _subjects = [];
   List<ChapterModel> _chapters = [];
+  List<QuizSetModel> _quizSets = [];
   List<QuestionModel> _questions = [];
   int _currentQuestionIndex = 0;
   Map<String, int> _userAnswers = {}; // questionId -> selectedIndex
@@ -16,6 +17,7 @@ class QuizProvider extends ChangeNotifier {
 
   List<SubjectModel> get subjects => _subjects;
   List<ChapterModel> get chapters => _chapters;
+  List<QuizSetModel> get quizSets => _quizSets;
   List<QuestionModel> get questions => _questions;
   int get currentQuestionIndex => _currentQuestionIndex;
   Map<String, int> get userAnswers => _userAnswers;
@@ -27,7 +29,11 @@ class QuizProvider extends ChangeNotifier {
   Future<void> loadSubjects(String examId) async {
     _isLoading = true;
     notifyListeners();
-    _subjects = await _repository.getSubjects(examId);
+    try {
+      _subjects = await _repository.getSubjects(examId);
+    } catch (e) {
+      _subjects = [];
+    }
     _isLoading = false;
     notifyListeners();
   }
@@ -35,17 +41,37 @@ class QuizProvider extends ChangeNotifier {
   Future<void> loadChapters(String subjectId) async {
     _isLoading = true;
     notifyListeners();
-    _chapters = await _repository.getChapters(subjectId);
+    try {
+      _chapters = await _repository.getChapters(subjectId);
+    } catch (e) {
+      _chapters = [];
+    }
     _isLoading = false;
     notifyListeners();
   }
 
-  Future<void> loadQuestions(String chapterId) async {
+  Future<void> loadQuizSets(String chapterId) async {
     _isLoading = true;
     notifyListeners();
-    _questions = await _repository.getQuestions(chapterId);
-    _currentQuestionIndex = 0;
-    _userAnswers = {};
+    try {
+      _quizSets = await _repository.getQuizSets(chapterId);
+    } catch (e) {
+      _quizSets = [];
+    }
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> loadQuestions(String quizSetId) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      _questions = await _repository.getQuestions(quizSetId);
+      _currentQuestionIndex = 0;
+      _userAnswers = {};
+    } catch (e) {
+      _questions = [];
+    }
     _isLoading = false;
     notifyListeners();
   }
@@ -72,7 +98,7 @@ class QuizProvider extends ChangeNotifier {
   void submitQuiz() {
     int correct = 0;
     for (var question in _questions) {
-      if (_userAnswers[question.id] == question.correctAnswerIndex) {
+      if (_userAnswers[question.id] == question.correctOption) {
         correct++;
       }
     }

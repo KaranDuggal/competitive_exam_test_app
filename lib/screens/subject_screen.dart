@@ -44,7 +44,7 @@ class _SubjectScreenState extends State<SubjectScreen> {
                 margin: const EdgeInsets.only(bottom: 12),
                 child: ListTile(
                   leading: Text(subject.icon, style: const TextStyle(fontSize: 24)),
-                  title: Text(subject.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  title: Text(subject.name, style: const TextStyle(fontWeight: FontWeight.bold)),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () => context.push('/chapters/${subject.id}'),
                 ),

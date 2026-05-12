@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../providers/quiz_provider.dart';
 
 class QuizScreen extends StatefulWidget {
-  final String chapterId;
-  const QuizScreen({super.key, required this.chapterId});
+  final String quizSetId;
+  const QuizScreen({super.key, required this.quizSetId});
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
@@ -16,7 +16,7 @@ class _QuizScreenState extends State<QuizScreen> {
   void initState() {
     super.initState();
     Future.microtask(() =>
-        context.read<QuizProvider>().loadQuestions(widget.chapterId));
+        context.read<QuizProvider>().loadQuestions(widget.quizSetId));
   }
 
   @override
@@ -57,12 +57,12 @@ class _QuizScreenState extends State<QuizScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 LinearProgressIndicator(
-                  value: (provider.currentQuestionIndex + 1) / provider.questions.length,
+                  value: provider.questions.isEmpty ? 0 : (provider.currentQuestionIndex + 1) / provider.questions.length,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 const SizedBox(height: 30),
                 Text(
-                  question.questionText,
+                  question.text,
                   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 30),

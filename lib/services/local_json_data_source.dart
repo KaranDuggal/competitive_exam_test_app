@@ -32,6 +32,14 @@ class LocalJsonDataSource {
         .toList();
   }
 
+  Future<List<Map<String, dynamic>>> getQuizSets(String chapterId) async {
+    // For now, since our JSON doesn't have quiz sets, 
+    // we return a default quiz set for each chapter
+    return [
+      {'id': chapterId, 'title': 'Quiz 1'}
+    ];
+  }
+
   Future<List<QuestionModel>> getQuestions(String chapterId) async {
     final data = await _loadJsonData();
     final List questions = data['questions'];
