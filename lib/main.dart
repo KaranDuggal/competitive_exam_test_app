@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'providers/home_controller.dart';
-import 'providers/theme_controller.dart';
+import 'providers/home_provider.dart';
+import 'providers/theme_provider.dart';
 import 'providers/quiz_provider.dart';
 import 'repositories/quiz_repository.dart';
 import 'services/local_json_data_source.dart';
@@ -21,8 +21,8 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => HomeController(quizRepository)),
-        ChangeNotifierProvider(create: (_) => ThemeController(prefs)),
+        ChangeNotifierProvider(create: (_) => HomeProvider(quizRepository)),
+        ChangeNotifierProvider(create: (_) => ThemeProvider(prefs)),
         ChangeNotifierProvider(
           create: (_) => QuizProvider(repository: quizRepository),
         ),
@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeController>(
+    return Consumer<ThemeProvider>(
       builder: (context, themeController, child) {
         return MaterialApp.router(
           title: 'Exam Jyoti',

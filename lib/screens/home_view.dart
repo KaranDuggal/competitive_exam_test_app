@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import '../providers/home_controller.dart';
-import '../providers/theme_controller.dart';
+import '../providers/home_provider.dart';
+import '../providers/theme_provider.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -15,7 +15,7 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => context.read<HomeController>().fetchExams());
+    Future.microtask(() => context.read<HomeProvider>().fetchExams());
   }
 
   @override
@@ -25,7 +25,7 @@ class _HomeViewState extends State<HomeView> {
         title: const Text('Exam Jyoti'),
         centerTitle: true,
         actions: [
-          Consumer<ThemeController>(
+          Consumer<ThemeProvider>(
             builder: (context, themeController, child) {
               return IconButton(
                 icon: Icon(
@@ -41,7 +41,7 @@ class _HomeViewState extends State<HomeView> {
           ),
         ],
       ),
-      body: Consumer<HomeController>(
+      body: Consumer<HomeProvider>(
         builder: (context, controller, child) {
           if (controller.isLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -49,7 +49,7 @@ class _HomeViewState extends State<HomeView> {
           if (controller.error != null) {
             return Center(child: Text('Error: ${controller.error}'));
           }
-          if (controller.categories.isEmpty) {
+          if (controller.exams.isEmpty) {
             return const Center(child: Text('No exams found.'));
           }
           return Padding(
@@ -61,12 +61,12 @@ class _HomeViewState extends State<HomeView> {
                 mainAxisSpacing: 16,
                 childAspectRatio: 1.1,
               ),
-              itemCount: controller.categories.length,
+              itemCount: controller.exams.length,
               itemBuilder: (context, index) {
-                final category = controller.categories[index];
+                final exam = controller.exams[index];
                 return GestureDetector(
                   onTap: () {
-                    context.push('/subjects/${category.id}');
+                    context.push('/subjects/${exam.id}');
                   },
                   child: Card(
                     elevation: 4,
@@ -77,12 +77,12 @@ class _HomeViewState extends State<HomeView> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          category.icon,
+                          exam.icon,
                           style: const TextStyle(fontSize: 40),
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          category.name,
+                          exam.name,
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

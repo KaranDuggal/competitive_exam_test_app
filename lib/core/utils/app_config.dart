@@ -1,5 +1,5 @@
 class AppConfig {
-  static const String baseUrl = 'https://necessary-literature-publicity-excitement.trycloudflare.com';
+  static const String baseUrl = 'https://dakota-tricks-machinery-wal.trycloudflare.com';
   
   // App related strings
   static const String appName = 'Exam Jyoti';
