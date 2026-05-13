@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../core/widgets/app_app_bar.dart';
 import '../providers/home_provider.dart';
-import '../providers/theme_provider.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
