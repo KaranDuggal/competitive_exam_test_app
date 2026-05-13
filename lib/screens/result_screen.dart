@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import '../core/widgets/app_app_bar.dart';
 import '../providers/quiz_provider.dart';
 
 class ResultScreen extends StatelessWidget {
@@ -15,9 +16,8 @@ class ResultScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Result'),
-        automaticallyImplyLeading: false,
+      appBar: const AppAppBar(
+        title: 'Result',
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),

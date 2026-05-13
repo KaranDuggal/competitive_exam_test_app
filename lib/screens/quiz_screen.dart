@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import '../core/widgets/app_app_bar.dart';
 import '../providers/quiz_provider.dart';
 
 class QuizScreen extends StatefulWidget {
@@ -22,17 +23,21 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Quiz'),
+      appBar: AppAppBar(
+        title: 'Quiz',
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Center(
               child: Consumer<QuizProvider>(
-                builder: (context, provider, _) => Text(
-                  '${provider.currentQuestionIndex + 1}/${provider.questions.length}',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
+                builder: (context, provider, _) {
+                  return Text(
+                    '${provider.currentQuestionIndex + 1}/${provider.questions.length}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                },
               ),
             ),
           ),

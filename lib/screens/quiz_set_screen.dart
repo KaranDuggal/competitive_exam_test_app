@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import '../core/widgets/app_app_bar.dart';
 import '../providers/quiz_provider.dart';
 
 class QuizSetScreen extends StatefulWidget {
@@ -22,8 +23,8 @@ class _QuizSetScreenState extends State<QuizSetScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Select Quiz Set'),
+      appBar: const AppAppBar(
+        title: 'Quiz Sets',
       ),
       body: Consumer<QuizProvider>(
         builder: (context, quizProvider, child) {

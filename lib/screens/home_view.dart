@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import '../core/widgets/app_app_bar.dart';
 import '../providers/home_provider.dart';
 import '../providers/theme_provider.dart';
 
@@ -21,25 +22,9 @@ class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Exam Jyoti'),
-        centerTitle: true,
-        actions: [
-          Consumer<ThemeProvider>(
-            builder: (context, themeController, child) {
-              return IconButton(
-                icon: Icon(
-                  themeController.isDarkMode
-                      ? Icons.light_mode
-                      : Icons.dark_mode,
-                ),
-                onPressed: () {
-                  themeController.toggleTheme();
-                },
-              );
-            },
-          ),
-        ],
+      appBar: const AppAppBar(
+        title: 'Exam Jyoti',
+        showThemeButton: true,
       ),
       body: Consumer<HomeProvider>(
         builder: (context, controller, child) {

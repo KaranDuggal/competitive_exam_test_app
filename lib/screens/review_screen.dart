@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../core/widgets/app_app_bar.dart';
 import '../providers/quiz_provider.dart';
 
 class ReviewScreen extends StatelessWidget {
@@ -8,8 +9,8 @@ class ReviewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Review Answers'),
+      appBar: const AppAppBar(
+        title: 'Review Answers',
       ),
       body: Consumer<QuizProvider>(
         builder: (context, provider, child) {

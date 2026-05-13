@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/widgets/app_app_bar.dart';
+
 class QuizInstructionScreen extends StatelessWidget {
   final String quizSetId;
   const QuizInstructionScreen({super.key, required this.quizSetId});
@@ -8,8 +10,8 @@ class QuizInstructionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Instructions'),
+      appBar: const AppAppBar(
+        title: 'Instructions',
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
