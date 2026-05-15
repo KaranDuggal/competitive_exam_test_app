@@ -1,1 +1,1 @@
-flutter clean && flutter pub get && flutter build apk
+clear && flutter clean && flutter pub get && flutter build apk
