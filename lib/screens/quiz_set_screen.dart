@@ -28,28 +28,46 @@ class _QuizSetScreenState extends State<QuizSetScreen> {
       ),
       body: Consumer<QuizProvider>(
         builder: (context, quizProvider, child) {
-          if (quizProvider.isLoading) {
+          if (quizProvider.isLoading && quizProvider.quizSets.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
 
+          Widget content;
           if (quizProvider.quizSets.isEmpty) {
-            return const Center(child: Text('No quiz sets available'));
+            content = const Center(child: Text('No quiz sets available'));
+          } else {
+            content = ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              itemCount: quizProvider.quizSets.length,
+              itemBuilder: (context, index) {
+                final quizSet = quizProvider.quizSets[index];
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: ListTile(
+                    title: Text(quizSet.name,
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    trailing: const Icon(Icons.quiz_outlined),
+                    onTap: () =>
+                        context.push('/quiz-instruction/${quizSet.id}'),
+                  ),
+                );
+              },
+            );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: quizProvider.quizSets.length,
-            itemBuilder: (context, index) {
-              final quizSet = quizProvider.quizSets[index];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: ListTile(
-                  title: Text(quizSet.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  trailing: const Icon(Icons.quiz_outlined),
-                  onTap: () => context.push('/quiz-instruction/${quizSet.id}'),
-                ),
-              );
-            },
+          return RefreshIndicator(
+            onRefresh: () => quizProvider.loadQuizSets(widget.chapterId),
+            child: quizProvider.quizSets.isEmpty
+                ? Stack(
+                    children: [
+                      ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                      ),
+                      content,
+                    ],
+                  )
+                : content,
           );
         },
       ),

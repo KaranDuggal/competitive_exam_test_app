@@ -28,29 +28,47 @@ class _SubjectScreenState extends State<SubjectScreen> {
       ),
       body: Consumer<QuizProvider>(
         builder: (context, quizProvider, child) {
-          if (quizProvider.isLoading) {
+          if (quizProvider.isLoading && quizProvider.subjects.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
 
+          Widget content;
           if (quizProvider.subjects.isEmpty) {
-            return const Center(child: Text('No subjects available'));
+            content = const Center(child: Text('No subjects available'));
+          } else {
+            content = ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              itemCount: quizProvider.subjects.length,
+              itemBuilder: (context, index) {
+                final subject = quizProvider.subjects[index];
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: ListTile(
+                    leading:
+                        Text(subject.icon, style: const TextStyle(fontSize: 24)),
+                    title: Text(subject.name,
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () => context.push('/chapters/${subject.id}'),
+                  ),
+                );
+              },
+            );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: quizProvider.subjects.length,
-            itemBuilder: (context, index) {
-              final subject = quizProvider.subjects[index];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: ListTile(
-                  leading: Text(subject.icon, style: const TextStyle(fontSize: 24)),
-                  title: Text(subject.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () => context.push('/chapters/${subject.id}'),
-                ),
-              );
-            },
+          return RefreshIndicator(
+            onRefresh: () => quizProvider.loadSubjects(widget.examId),
+            child: quizProvider.subjects.isEmpty
+                ? Stack(
+                    children: [
+                      ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                      ),
+                      content,
+                    ],
+                  )
+                : content,
           );
         },
       ),
