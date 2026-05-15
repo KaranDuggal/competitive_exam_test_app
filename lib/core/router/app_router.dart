@@ -1,5 +1,5 @@
 import 'package:go_router/go_router.dart';
-import '../../screens/home_view.dart';
+import '../../screens/home_screen.dart';
 import '../../screens/subject_screen.dart';
 import '../../screens/chapter_screen.dart';
 import '../../screens/quiz_set_screen.dart';
@@ -14,7 +14,7 @@ class AppRouter {
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => const HomeView(),
+        builder: (context, state) => const HomeScreen(),
       ),
       GoRoute(
         path: '/subjects/:examId',

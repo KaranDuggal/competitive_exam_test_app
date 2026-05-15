@@ -5,14 +5,14 @@ import '../core/widgets/app_app_bar.dart';
 import '../core/widgets/refreshable_data_view.dart';
 import '../providers/home_provider.dart';
 
-class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<HomeView> createState() => _HomeViewState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
