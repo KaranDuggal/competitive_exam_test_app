@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../core/widgets/app_app_bar.dart';
+import '../core/widgets/refreshable_data_view.dart';
 import '../providers/home_provider.dart';
 
 class HomeView extends StatefulWidget {
@@ -27,17 +28,13 @@ class _HomeViewState extends State<HomeView> {
       ),
       body: Consumer<HomeProvider>(
         builder: (context, controller, child) {
-          if (controller.isLoading && controller.exams.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          Widget content;
-          if (controller.error != null && controller.exams.isEmpty) {
-            content = Center(child: Text('Error: ${controller.error}'));
-          } else if (controller.exams.isEmpty) {
-            content = const Center(child: Text('No exams found.'));
-          } else {
-            content = Padding(
+          return RefreshableDataView(
+            isLoading: controller.isLoading,
+            isEmpty: controller.exams.isEmpty,
+            error: controller.error,
+            emptyMessage: 'No exams found.',
+            onRefresh: () => controller.fetchExams(),
+            child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: GridView.builder(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -80,21 +77,7 @@ class _HomeViewState extends State<HomeView> {
                   );
                 },
               ),
-            );
-          }
-
-          return RefreshIndicator(
-            onRefresh: () => controller.fetchExams(),
-            child: controller.exams.isEmpty
-                ? Stack(
-                    children: [
-                      ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                      ),
-                      content,
-                    ],
-                  )
-                : content,
+            ),
           );
         },
       ),

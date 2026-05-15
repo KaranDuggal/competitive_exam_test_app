@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../core/widgets/app_app_bar.dart';
+import '../core/widgets/refreshable_data_view.dart';
 import '../providers/quiz_provider.dart';
 
 class QuizSetScreen extends StatefulWidget {
@@ -28,15 +29,12 @@ class _QuizSetScreenState extends State<QuizSetScreen> {
       ),
       body: Consumer<QuizProvider>(
         builder: (context, quizProvider, child) {
-          if (quizProvider.isLoading && quizProvider.quizSets.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          Widget content;
-          if (quizProvider.quizSets.isEmpty) {
-            content = const Center(child: Text('No quiz sets available'));
-          } else {
-            content = ListView.builder(
+          return RefreshableDataView(
+            isLoading: quizProvider.isLoading,
+            isEmpty: quizProvider.quizSets.isEmpty,
+            emptyMessage: 'No quiz sets available',
+            onRefresh: () => quizProvider.loadQuizSets(widget.chapterId),
+            child: ListView.builder(
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.all(16),
               itemCount: quizProvider.quizSets.length,
@@ -53,21 +51,7 @@ class _QuizSetScreenState extends State<QuizSetScreen> {
                   ),
                 );
               },
-            );
-          }
-
-          return RefreshIndicator(
-            onRefresh: () => quizProvider.loadQuizSets(widget.chapterId),
-            child: quizProvider.quizSets.isEmpty
-                ? Stack(
-                    children: [
-                      ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                      ),
-                      content,
-                    ],
-                  )
-                : content,
+            ),
           );
         },
       ),
