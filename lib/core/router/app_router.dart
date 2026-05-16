@@ -1,5 +1,4 @@
 import 'package:go_router/go_router.dart';
-import '../../screens/home_screen.dart';
 import '../../screens/subject_screen.dart';
 import '../../screens/chapter_screen.dart';
 import '../../screens/quiz_set_screen.dart';
@@ -7,6 +6,7 @@ import '../../screens/quiz_instruction_screen.dart';
 import '../../screens/quiz_screen.dart';
 import '../../screens/result_screen.dart';
 import '../../screens/review_screen.dart';
+import '../widgets/persistent_nav_bar.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -14,7 +14,7 @@ class AppRouter {
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => const HomeScreen(),
+        builder: (context, state) => const PersistentNavBar(),
       ),
       GoRoute(
         path: '/subjects/:examId',

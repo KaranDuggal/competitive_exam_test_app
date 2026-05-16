@@ -38,6 +38,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   wakelock_plus: ^1.2.8
 
+  persistent_bottom_nav_bar_v2: ^6.3.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
