@@ -68,18 +68,6 @@ class ConnectivityService {
           content: const Text(
             'Please check your internet connection.',
           ),
-
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-
-              child: const Text(
-                'OK',
-              ),
-            ),
-          ],
         );
       },
     ).then((_) {
