@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import '../router/app_router.dart';
 
 class ConnectivityService {
-
   static StreamSubscription<List<ConnectivityResult>>?
       _subscription;
 
@@ -17,9 +16,7 @@ class ConnectivityService {
         .onConnectivityChanged
         .listen(
       (List<ConnectivityResult> results) {
-
-        final bool hasConnection =
-            results.any(
+        final bool hasConnection = results.any(
           (result) =>
               result != ConnectivityResult.none,
         );
@@ -38,7 +35,6 @@ class ConnectivityService {
   }
 
   static void _showNoInternetDialog() {
-
     if (_dialogOpen) {
       return;
     }
@@ -60,13 +56,17 @@ class ConnectivityService {
       barrierDismissible: false,
 
       builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text(
-            'No Internet',
-          ),
+        return PopScope(
+          canPop: false,
 
-          content: const Text(
-            'Please check your internet connection.',
+          child: AlertDialog(
+            title: const Text(
+              'No Internet',
+            ),
+
+            content: const Text(
+              'Please check your internet connection.',
+            ),
           ),
         );
       },
@@ -76,7 +76,6 @@ class ConnectivityService {
   }
 
   static void _closeDialog() {
-
     if (!_dialogOpen) {
       return;
     }
