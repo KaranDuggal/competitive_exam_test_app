@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../core/widgets/app_app_bar.dart';
+import '../core/widgets/network_refresh_wrapper.dart';
 import '../core/widgets/refreshable_data_view.dart';
 import '../providers/quiz_provider.dart';
 
@@ -27,33 +28,38 @@ class _QuizSetScreenState extends State<QuizSetScreen> {
       appBar: const AppAppBar(
         title: 'Quiz Sets',
       ),
-      body: Consumer<QuizProvider>(
-        builder: (context, quizProvider, child) {
-          return RefreshableDataView(
-            isLoading: quizProvider.isLoading,
-            isEmpty: quizProvider.quizSets.isEmpty,
-            emptyMessage: 'No quiz sets available',
-            onRefresh: () => quizProvider.loadQuizSets(widget.chapterId),
-            child: ListView.builder(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16),
-              itemCount: quizProvider.quizSets.length,
-              itemBuilder: (context, index) {
-                final quizSet = quizProvider.quizSets[index];
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  child: ListTile(
-                    title: Text(quizSet.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                    trailing: const Icon(Icons.quiz_outlined),
-                    onTap: () =>
-                        context.push('/quiz-instruction/${quizSet.id}'),
-                  ),
-                );
-              },
-            ),
-          );
+      body: NetworkRefreshWrapper(
+        onInternetRestored: () async {
+          await context.read<QuizProvider>().loadQuizSets(widget.chapterId);
         },
+        child: Consumer<QuizProvider>(
+          builder: (context, quizProvider, child) {
+            return RefreshableDataView(
+              isLoading: quizProvider.isLoading,
+              isEmpty: quizProvider.quizSets.isEmpty,
+              emptyMessage: 'No quiz sets available',
+              onRefresh: () => quizProvider.loadQuizSets(widget.chapterId),
+              child: ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16),
+                itemCount: quizProvider.quizSets.length,
+                itemBuilder: (context, index) {
+                  final quizSet = quizProvider.quizSets[index];
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: ListTile(
+                      title: Text(quizSet.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      trailing: const Icon(Icons.quiz_outlined),
+                      onTap: () =>
+                          context.push('/quiz-instruction/${quizSet.id}'),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        ),
       ),
     );
   }
