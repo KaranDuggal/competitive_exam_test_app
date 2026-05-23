@@ -11,50 +11,31 @@ class PointsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Consumer<AuthProvider>(
-        builder: (
-          context,
-          authProvider,
-          child,
-        ) {
-
+        builder: (context, authProvider, child) {
           if (authProvider.isLoading) {
-
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (authProvider.isLoggedIn) {
-
-            final user =
-                authProvider.user!;
+            final user = authProvider.user!;
 
             return Center(
               child: Padding(
-                padding:
-                    const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(24),
 
                 child: Column(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
 
                   children: [
-
                     CircleAvatar(
                       radius: 45,
 
-                      backgroundImage:
-                          user.photoUrl != null
-                              ? NetworkImage(
-                                  user.photoUrl!,
-                                )
-                              : null,
+                      backgroundImage: user.photoUrl != null
+                          ? NetworkImage(user.photoUrl!)
+                          : null,
 
                       child: user.photoUrl == null
-                          ? const Icon(
-                              Icons.person,
-                              size: 40,
-                            )
+                          ? const Icon(Icons.person, size: 40)
                           : null,
                     ),
 
@@ -65,8 +46,7 @@ class PointsScreen extends StatelessWidget {
 
                       style: const TextStyle(
                         fontSize: 24,
-                        fontWeight:
-                            FontWeight.bold,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
 
@@ -77,113 +57,75 @@ class PointsScreen extends StatelessWidget {
 
                       style: TextStyle(
                         fontSize: 16,
-                        color:
-                            Colors.grey.shade600,
+                        color: Colors.grey.shade600,
                       ),
                     ),
 
                     const SizedBox(height: 30),
 
                     Container(
-                      padding:
-                          const EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(20),
 
                       decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(
-                          20,
-                        ),
+                        borderRadius: BorderRadius.circular(20),
 
-                        color:
-                            Theme.of(context)
-                                .colorScheme
-                                .primary
-                                .withOpacity(0.08),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.primary.withOpacity(0.08),
                       ),
 
                       child: Column(
                         children: [
-
                           const Text(
                             'Coming Soon',
                             style: TextStyle(
                               fontSize: 22,
-                              fontWeight:
-                                  FontWeight.bold,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-
                           const SizedBox(height: 10),
-
                           Text(
                             'Points, leaderboard, achievements, and quiz analytics will appear here.',
-
-                            textAlign:
-                                TextAlign.center,
-
+                            textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 15,
                               height: 1.5,
-                              color: Colors
-                                  .grey.shade700,
+                              color: Colors.grey.shade700,
                             ),
                           ),
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 30),
-
                     ElevatedButton.icon(
                       onPressed: () async {
                         try {
                           print("runnnn---");
-                          await authProvider
-                            .logout();
-                        } catch (e) {
-                          
-                        }
-
-                        
-
+                          await authProvider.logout();
+                        } catch (e) {}
                       },
-
-                      icon: const Icon(
-                        Icons.logout,
-                      ),
-
-                      label: const Text(
-                        'Logout',
-                      ),
+                      icon: const Icon(Icons.logout),
+                      label: const Text('Logout'),
                     ),
                   ],
                 ),
               ),
             );
           }
-
           return Padding(
-            padding:
-                const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(24),
 
             child: Center(
               child: Column(
-                mainAxisAlignment:
-                    MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
 
                 children: [
-
                   const Text(
                     'Login to Track Your Progress',
 
-                    textAlign:
-                        TextAlign.center,
+                    textAlign: TextAlign.center,
 
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight:
-                          FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   ),
 
                   const SizedBox(height: 10),
@@ -191,14 +133,12 @@ class PointsScreen extends StatelessWidget {
                   Text(
                     'Save your quiz history, track performance, and access your progress anytime.',
 
-                    textAlign:
-                        TextAlign.center,
+                    textAlign: TextAlign.center,
 
                     style: TextStyle(
                       fontSize: 15,
                       height: 1.5,
-                      color:
-                          Colors.grey.shade600,
+                      color: Colors.grey.shade600,
                     ),
                   ),
 
@@ -206,10 +146,7 @@ class PointsScreen extends StatelessWidget {
 
                   GoogleLoginButton(
                     onPressed: () async {
-                      print("runnn---");
-                      await authProvider
-                          .login();
-
+                      await authProvider.login();
                     },
                   ),
                 ],
