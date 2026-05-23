@@ -100,7 +100,6 @@ class PointsScreen extends StatelessWidget {
                     ElevatedButton.icon(
                       onPressed: () async {
                         try {
-                          print("runnnn---");
                           await authProvider.logout();
                         } catch (e) {}
                       },
