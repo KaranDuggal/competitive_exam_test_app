@@ -6,26 +6,23 @@ import '../../models/exam_model.dart';
 import '../../models/question_model.dart';
 import '../../models/quiz_set_model.dart';
 import '../../models/subject_model.dart';
+import '../../models/auth_model.dart';
 
 class ApiDataSource {
   final Dio _dio;
 
-  ApiDataSource({
-    required String baseUrl,
-  }) : _dio = Dio(
-          BaseOptions(
-            baseUrl: baseUrl,
-            connectTimeout: const Duration(seconds: 10),
-            receiveTimeout: const Duration(seconds: 10),
-            responseType: ResponseType.json,
-          ),
-        ) {
+  ApiDataSource({required String baseUrl})
+    : _dio = Dio(
+        BaseOptions(
+          baseUrl: baseUrl,
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
+          responseType: ResponseType.json,
+        ),
+      ) {
     if (kDebugMode) {
       _dio.interceptors.add(
-        LogInterceptor(
-          requestBody: true,
-          responseBody: true,
-        ),
+        LogInterceptor(requestBody: true, responseBody: true),
       );
     }
   }
@@ -38,14 +35,10 @@ class ApiDataSource {
         .toList();
   }
 
-  Future<List<SubjectModel>> getSubjects(
-    String examId,
-  ) async {
+  Future<List<SubjectModel>> getSubjects(String examId) async {
     final data = await _getList(
       '/subjects',
-      queryParameters: {
-        'examId': examId,
-      },
+      queryParameters: {'examId': examId},
     );
 
     return data
@@ -53,14 +46,10 @@ class ApiDataSource {
         .toList();
   }
 
-  Future<List<ChapterModel>> getChapters(
-    String subjectId,
-  ) async {
+  Future<List<ChapterModel>> getChapters(String subjectId) async {
     final data = await _getList(
       '/chapters',
-      queryParameters: {
-        'subjectId': subjectId,
-      },
+      queryParameters: {'subjectId': subjectId},
     );
 
     return data
@@ -68,14 +57,10 @@ class ApiDataSource {
         .toList();
   }
 
-  Future<List<QuizSetModel>> getQuizSets(
-    String chapterId,
-  ) async {
+  Future<List<QuizSetModel>> getQuizSets(String chapterId) async {
     final data = await _getList(
       '/quiz-sets',
-      queryParameters: {
-        'chapterId': chapterId,
-      },
+      queryParameters: {'chapterId': chapterId},
     );
 
     return data
@@ -83,14 +68,10 @@ class ApiDataSource {
         .toList();
   }
 
-  Future<List<QuestionModel>> getQuestions(
-    String quizSetId,
-  ) async {
+  Future<List<QuestionModel>> getQuestions(String quizSetId) async {
     final data = await _getList(
       '/questions',
-      queryParameters: {
-        'quizSetId': quizSetId,
-      },
+      queryParameters: {'quizSetId': quizSetId},
     );
 
     return data
@@ -103,27 +84,47 @@ class ApiDataSource {
     Map<String, dynamic>? queryParameters,
   }) async {
     try {
-      final response = await _dio.get(
-        path,
-        queryParameters: queryParameters,
-      );
+      final response = await _dio.get(path, queryParameters: queryParameters);
 
       final body = response.data as Map<String, dynamic>;
 
       if (body['success'] != true) {
-        throw Exception(
-          body['message'] ?? 'Something went wrong',
-        );
+        throw Exception(body['message'] ?? 'Something went wrong');
       }
 
       return body['data'] as List<dynamic>;
     } on DioException catch (e) {
-      throw Exception(
-        'Network error: ${e.message}',
-      );
+      throw Exception('Network error: ${e.message}');
     } catch (e) {
+      throw Exception('Unexpected error: $e');
+    }
+  }
+
+  Future<AuthModel> googleLogin({
+    required String googleId,
+    required String name,
+    required String email,
+    String? photoUrl,
+  }) async {
+    try {
+      final response = await _dio.post(
+        '/google-login',
+        data: {
+          'googleId': googleId,
+          'name': name,
+          'email': email,
+          'photoUrl': photoUrl,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return AuthModel.fromJson(response.data as Map<String, dynamic>);
+      } else {
+        throw Exception('Login failed');
+      }
+    } on DioException catch (e) {
       throw Exception(
-        'Unexpected error: $e',
+        e.response?.data['message'] ?? e.message ?? 'Something went wrong',
       );
     }
   }

@@ -50,7 +50,9 @@ void main() async {
           ),
         ),
         ChangeNotifierProvider(
-          create: (_) => AuthProvider(),
+          create: (_) => AuthProvider(
+            repository: quizRepository,
+          ),
         ),
       ],
 

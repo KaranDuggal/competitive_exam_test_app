@@ -1,3 +1,4 @@
+import '../models/auth_model.dart';
 import '../models/exam_model.dart';
 import '../models/subject_model.dart';
 import '../models/chapter_model.dart';
@@ -31,4 +32,18 @@ class QuizRepository {
   Future<List<QuestionModel>> getQuestions(String quizSetId) {
     return _apiDataSource.getQuestions(quizSetId);
   }
+Future<AuthModel> googleLogin({
+  required String googleId,
+  required String name,
+  required String email,
+  String? photoUrl,
+}) {
+  return _apiDataSource.googleLogin(
+    googleId: googleId,
+    name: name,
+    email: email,
+    photoUrl: photoUrl,
+  );
+}
+
 }
