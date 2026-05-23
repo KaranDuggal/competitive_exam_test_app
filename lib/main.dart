@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'providers/home_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/quiz_provider.dart';
-
+import 'providers/auth_provider.dart';
 import 'repositories/quiz_repository.dart';
 
 import 'datasources/remote/api_data_source.dart';
@@ -48,6 +48,9 @@ void main() async {
           create: (_) => QuizProvider(
             repository: quizRepository,
           ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider(),
         ),
       ],
 
