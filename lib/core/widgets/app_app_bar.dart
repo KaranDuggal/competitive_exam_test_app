@@ -3,8 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../providers/theme_provider.dart';
 
-class AppAppBar extends StatelessWidget
-    implements PreferredSizeWidget {
+class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
 
   final bool showThemeButton;
@@ -36,13 +35,14 @@ class AppAppBar extends StatelessWidget
         if (showThemeButton)
           Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {
+              final isDark = themeProvider.themeMode == ThemeMode.dark;
+
               return IconButton(
-                icon: Icon(
-                  themeProvider.isDarkMode
-                      ? Icons.light_mode
-                      : Icons.dark_mode,
-                ),
-                onPressed: themeProvider.toggleTheme,
+                icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+
+                onPressed: () {
+                  themeProvider.toggleTheme(!isDark);
+                },
               );
             },
           ),
@@ -51,6 +51,5 @@ class AppAppBar extends StatelessWidget
   }
 
   @override
-  Size get preferredSize =>
-      const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
