@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'providers/home_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/quiz_provider.dart';
 import 'providers/auth_provider.dart';
+
 import 'repositories/quiz_repository.dart';
+import 'repositories/auth_repository.dart';
 
 import 'datasources/remote/api_data_source.dart';
 
@@ -21,39 +25,30 @@ void main() async {
 
   final prefs = await SharedPreferences.getInstance();
 
-  final apiDataSource = ApiDataSource(
-    baseUrl: AppConfig.baseUrl,
-  );
+  final apiDataSource = ApiDataSource(baseUrl: AppConfig.baseUrl);
 
-  final quizRepository = QuizRepository(
-    apiDataSource: apiDataSource,
-  );
+  final quizRepository = QuizRepository(apiDataSource: apiDataSource);
+
+  final authRepository = AuthRepository(apiDataSource: apiDataSource);
+
+  final authProvider = AuthProvider(repository: authRepository);
+
+  await authProvider.loadUserSession();
+
+  ConnectivityService.initialize();
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => HomeProvider(
-            quizRepository,
-          ),
-        ),
+        ChangeNotifierProvider(create: (_) => HomeProvider(quizRepository)),
+
+        ChangeNotifierProvider(create: (_) => ThemeProvider(prefs)),
 
         ChangeNotifierProvider(
-          create: (_) => ThemeProvider(
-            prefs,
-          ),
+          create: (_) => QuizProvider(repository: quizRepository),
         ),
 
-        ChangeNotifierProvider(
-          create: (_) => QuizProvider(
-            repository: quizRepository,
-          ),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => AuthProvider(
-            repository: quizRepository,
-          ),
-        ),
+        ChangeNotifierProvider(create: (_) => authProvider),
       ],
 
       child: const MyApp(),
@@ -61,28 +56,8 @@ void main() async {
   );
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-
-  @override
-  void initState() {
-    super.initState();
-
-    ConnectivityService.initialize();
-  }
-
-  @override
-  void dispose() {
-    ConnectivityService.dispose();
-
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {

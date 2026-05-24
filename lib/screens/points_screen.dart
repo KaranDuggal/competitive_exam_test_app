@@ -16,7 +16,7 @@ class PointsScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (authProvider.isLoggedIn) {
+          if (authProvider.isLoggedIn && authProvider.user != null) {
             final user = authProvider.user!;
 
             return Center(
@@ -42,7 +42,7 @@ class PointsScreen extends StatelessWidget {
                     const SizedBox(height: 20),
 
                     Text(
-                      user.displayName ?? '',
+                      user.name,
 
                       style: const TextStyle(
                         fontSize: 24,
@@ -78,15 +78,20 @@ class PointsScreen extends StatelessWidget {
                         children: [
                           const Text(
                             'Coming Soon',
+
                             style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+
                           const SizedBox(height: 10),
+
                           Text(
                             'Points, leaderboard, achievements, and quiz analytics will appear here.',
+
                             textAlign: TextAlign.center,
+
                             style: TextStyle(
                               fontSize: 15,
                               height: 1.5,
@@ -96,14 +101,20 @@ class PointsScreen extends StatelessWidget {
                         ],
                       ),
                     ),
+
                     const SizedBox(height: 30),
+
                     ElevatedButton.icon(
                       onPressed: () async {
                         try {
                           await authProvider.logout();
-                        } catch (e) {}
+                        } catch (e) {
+                          debugPrint(e.toString());
+                        }
                       },
+
                       icon: const Icon(Icons.logout),
+
                       label: const Text('Logout'),
                     ),
                   ],
@@ -111,6 +122,7 @@ class PointsScreen extends StatelessWidget {
               ),
             );
           }
+
           return Padding(
             padding: const EdgeInsets.all(24),
 

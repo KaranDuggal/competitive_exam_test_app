@@ -16,7 +16,7 @@ class ProfileScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (authProvider.isLoggedIn) {
+          if (authProvider.isLoggedIn && authProvider.user != null) {
             final user = authProvider.user!;
 
             return Center(
@@ -42,7 +42,7 @@ class ProfileScreen extends StatelessWidget {
                     const SizedBox(height: 20),
 
                     Text(
-                      user.displayName ?? '',
+                      user.name,
 
                       style: const TextStyle(
                         fontSize: 24,

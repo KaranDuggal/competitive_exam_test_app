@@ -1,11 +1,12 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 
-import '../../models/chapter_model.dart';
+import '../../core/services/token_service.dart';
+
 import '../../models/exam_model.dart';
-import '../../models/question_model.dart';
-import '../../models/quiz_set_model.dart';
 import '../../models/subject_model.dart';
+import '../../models/chapter_model.dart';
+import '../../models/quiz_set_model.dart';
+import '../../models/question_model.dart';
 import '../../models/auth_model.dart';
 
 class ApiDataSource {
@@ -20,84 +21,75 @@ class ApiDataSource {
           responseType: ResponseType.json,
         ),
       ) {
-    if (kDebugMode) {
-      _dio.interceptors.add(
-        LogInterceptor(requestBody: true, responseBody: true),
-      );
-    }
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          final token = await TokenService.getToken();
+
+          if (token != null) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
+
+          return handler.next(options);
+        },
+      ),
+    );
+
+    _dio.interceptors.add(
+      LogInterceptor(requestBody: true, responseBody: true),
+    );
   }
 
   Future<List<ExamModel>> getExams() async {
-    final data = await _getList('/exams');
+    final response = await _dio.get('/exams');
 
-    return data
-        .map((e) => ExamModel.fromJson(e as Map<String, dynamic>))
-        .toList();
+    final List data = response.data['data'];
+
+    return data.map((json) => ExamModel.fromJson(json)).toList();
   }
 
   Future<List<SubjectModel>> getSubjects(String examId) async {
-    final data = await _getList(
+    final response = await _dio.get(
       '/subjects',
       queryParameters: {'examId': examId},
     );
 
-    return data
-        .map((e) => SubjectModel.fromJson(e as Map<String, dynamic>))
-        .toList();
+    final List data = response.data['data'];
+
+    return data.map((json) => SubjectModel.fromJson(json)).toList();
   }
 
   Future<List<ChapterModel>> getChapters(String subjectId) async {
-    final data = await _getList(
+    final response = await _dio.get(
       '/chapters',
       queryParameters: {'subjectId': subjectId},
     );
 
-    return data
-        .map((e) => ChapterModel.fromJson(e as Map<String, dynamic>))
-        .toList();
+    final List data = response.data['data'];
+
+    return data.map((json) => ChapterModel.fromJson(json)).toList();
   }
 
   Future<List<QuizSetModel>> getQuizSets(String chapterId) async {
-    final data = await _getList(
+    final response = await _dio.get(
       '/quiz-sets',
       queryParameters: {'chapterId': chapterId},
     );
 
-    return data
-        .map((e) => QuizSetModel.fromJson(e as Map<String, dynamic>))
-        .toList();
+    final List data = response.data['data'];
+
+    return data.map((json) => QuizSetModel.fromJson(json)).toList();
   }
 
   Future<List<QuestionModel>> getQuestions(String quizSetId) async {
-    final data = await _getList(
+    final response = await _dio.get(
       '/questions',
       queryParameters: {'quizSetId': quizSetId},
     );
 
-    return data
-        .map((e) => QuestionModel.fromJson(e as Map<String, dynamic>))
-        .toList();
-  }
+    final List data = response.data['data'];
 
-  Future<List<dynamic>> _getList(
-    String path, {
-    Map<String, dynamic>? queryParameters,
-  }) async {
-    try {
-      final response = await _dio.get(path, queryParameters: queryParameters);
-
-      final body = response.data as Map<String, dynamic>;
-
-      if (body['success'] != true) {
-        throw Exception(body['message'] ?? 'Something went wrong');
-      }
-
-      return body['data'] as List<dynamic>;
-    } on DioException catch (e) {
-      throw Exception('Network error: ${e.message}');
-    } catch (e) {
-      throw Exception('Unexpected error: $e');
-    }
+    return data.map((json) => QuestionModel.fromJson(json)).toList();
   }
 
   Future<AuthModel> googleLogin({
@@ -106,26 +98,16 @@ class ApiDataSource {
     required String email,
     String? photoUrl,
   }) async {
-    try {
-      final response = await _dio.post(
-        '/google-login',
-        data: {
-          'googleId': googleId,
-          'name': name,
-          'email': email,
-          'photoUrl': photoUrl,
-        },
-      );
+    final response = await _dio.post(
+      '/google-login',
+      data: {
+        'googleId': googleId,
+        'name': name,
+        'email': email,
+        'photoUrl': photoUrl,
+      },
+    );
 
-      if (response.statusCode == 200) {
-        return AuthModel.fromJson(response.data as Map<String, dynamic>);
-      } else {
-        throw Exception('Login failed');
-      }
-    } on DioException catch (e) {
-      throw Exception(
-        e.response?.data['message'] ?? e.message ?? 'Something went wrong',
-      );
-    }
+    return AuthModel.fromJson(response.data);
   }
 }

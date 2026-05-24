@@ -1,30 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../core/services/auth_service.dart';
+import '../core/services/token_service.dart';
+
 import '../models/auth_model.dart';
-import '../repositories/quiz_repository.dart';
+import '../models/user_session_model.dart';
+
+import '../repositories/auth_repository.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
-  final QuizRepository _repository;
 
-  AuthProvider({required QuizRepository repository}) : _repository = repository;
+  final AuthRepository _repository;
 
-  GoogleSignInAccount? _user;
+  AuthProvider({required AuthRepository repository}) : _repository = repository;
 
-  GoogleSignInAccount? get user => _user;
+  UserSessionModel? _user;
+
+  UserSessionModel? get user => _user;
+
+  String? _token;
+
+  String? get token => _token;
 
   bool _isLoading = false;
 
   bool get isLoading => _isLoading;
 
-  bool get isLoggedIn => _user != null;
+  bool _isLoggedIn = false;
 
-  String? _token;
+  bool get isLoggedIn => _isLoggedIn;
 
-  String? get token => _token;
+  Future<void> loadUserSession() async {
+    _token = await TokenService.getToken();
+
+    _user = await TokenService.getUser();
+
+    _isLoggedIn = _token != null && _user != null;
+
+    notifyListeners();
+  }
 
   Future<void> login() async {
     _isLoading = true;
@@ -32,13 +48,15 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final googleUser = await _authService.signIn();
+      final GoogleSignInAccount? googleUser = await _authService.signIn();
 
       if (googleUser == null) {
+        _isLoading = false;
+
+        notifyListeners();
+
         return;
       }
-
-      _user = googleUser;
 
       final AuthModel response = await _repository.googleLogin(
         googleId: googleUser.id,
@@ -49,11 +67,17 @@ class AuthProvider extends ChangeNotifier {
 
       _token = response.token;
 
-      final prefs = await SharedPreferences.getInstance();
+      _user = UserSessionModel(
+        name: googleUser.displayName ?? '',
+        email: googleUser.email,
+        photoUrl: googleUser.photoUrl,
+      );
 
-      await prefs.setString('token', response.token);
+      _isLoggedIn = true;
 
-      debugPrint('JWT Token: ${response.token}');
+      await TokenService.saveToken(response.token);
+
+      await TokenService.saveUser(_user!);
     } catch (e) {
       debugPrint(e.toString());
     } finally {
@@ -66,13 +90,13 @@ class AuthProvider extends ChangeNotifier {
   Future<void> logout() async {
     await _authService.signOut();
 
-    final prefs = await SharedPreferences.getInstance();
-
-    await prefs.remove('token');
+    await TokenService.removeToken();
 
     _user = null;
 
     _token = null;
+
+    _isLoggedIn = false;
 
     notifyListeners();
   }
