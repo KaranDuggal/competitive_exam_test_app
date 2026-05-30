@@ -66,8 +66,6 @@ class _QuizInstructionScreenState extends State<QuizInstructionScreen> {
               label: '${_minutesPerQuestion.toInt()} min',
               onChanged: (value) {
                 setState(() {
-                  final provider = context.read<QuizProvider>();
-                  context.read<QuizProvider>().setQuizConfiguration(quizDuration: provider.questions.length * 60 * value.toInt(), timePerQuestion: value.toInt());
                   _minutesPerQuestion = value;
                 });
               },
@@ -80,6 +78,7 @@ class _QuizInstructionScreenState extends State<QuizInstructionScreen> {
                 onPressed: () async {
                   final provider = context.read<QuizProvider>();
                   await provider.loadQuestions(widget.session.quizSetId ?? '');
+                  context.read<QuizProvider>().setQuizConfiguration(quizDuration: _minutesPerQuestion.toInt() * 60 * provider.questions.length, timePerQuestion: _minutesPerQuestion.toInt());
                   provider.startTimer(
                     totalQuestions: provider.questions.length,
                     minutesPerQuestion:_minutesPerQuestion.toInt(),
