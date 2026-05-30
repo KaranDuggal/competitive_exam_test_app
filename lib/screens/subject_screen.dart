@@ -57,7 +57,7 @@ class _SubjectScreenState extends State<SubjectScreen> {
                       ),
                       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                       onTap: () {
-                        context.read<QuizProvider>().setExam(subject.id);
+                        context.read<QuizProvider>().setSubject(subject.id);
                         context.push('/chapters/${subject.id}');
                       },
                     ),

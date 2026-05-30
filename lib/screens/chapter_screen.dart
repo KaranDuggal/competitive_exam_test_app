@@ -53,7 +53,7 @@ class _ChapterScreenState extends State<ChapterScreen> {
                       ),
                       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                       onTap: () {
-                        context.read<QuizProvider>().setExam(chapter.id);
+                        context.read<QuizProvider>().setChapter(chapter.id);
                         context.push('/quiz-sets/${chapter.id}');
                       },
                     ),

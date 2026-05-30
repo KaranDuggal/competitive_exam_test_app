@@ -3,7 +3,7 @@ class QuizSessionData {
   final String? subjectId;
   final String? chapterId;
   final String? quizSetId;
-  final int? timePerQuestion;
+  final int timePerQuestion;
   final int? quizDuration;
 
   const QuizSessionData({
@@ -11,7 +11,7 @@ class QuizSessionData {
     this.subjectId,
     this.chapterId,
     this.quizSetId,
-    this.timePerQuestion,
+    this.timePerQuestion = 2,
     this.quizDuration,
   });
 

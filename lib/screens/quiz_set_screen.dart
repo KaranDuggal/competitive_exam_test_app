@@ -53,7 +53,7 @@ class _QuizSetScreenState extends State<QuizSetScreen> {
                       ),
                       trailing: const Icon(Icons.quiz_outlined),
                       onTap: () {
-                        context.read<QuizProvider>().setExam(quizSet.id);
+                        context.read<QuizProvider>().setQuizSet(quizSet.id);
                         context.push('/quiz-instruction/${quizSet.id}');
                       },
                     ),

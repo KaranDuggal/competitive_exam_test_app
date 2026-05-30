@@ -19,7 +19,7 @@ class QuizInstructionScreen extends StatefulWidget {
 }
 
 class _QuizInstructionScreenState extends State<QuizInstructionScreen> {
-  double _minutesPerQuestion = 1;
+  double _minutesPerQuestion = 2;
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +66,8 @@ class _QuizInstructionScreenState extends State<QuizInstructionScreen> {
               label: '${_minutesPerQuestion.toInt()} min',
               onChanged: (value) {
                 setState(() {
+                  final provider = context.read<QuizProvider>();
+                  context.read<QuizProvider>().setQuizConfiguration(quizDuration: provider.questions.length * 60 * value.toInt(), timePerQuestion: value.toInt());
                   _minutesPerQuestion = value;
                 });
               },
@@ -80,17 +82,9 @@ class _QuizInstructionScreenState extends State<QuizInstructionScreen> {
                   await provider.loadQuestions(widget.session.quizSetId ?? '');
                   provider.startTimer(
                     totalQuestions: provider.questions.length,
-                    minutesPerQuestion:
-                        widget.session.timePerQuestion ??
-                        _minutesPerQuestion.toInt(),
+                    minutesPerQuestion:_minutesPerQuestion.toInt(),
                     onTimeUp: () async {
-                      await provider.submitQuiz(
-                        quizSetId: widget.session.quizSetId ?? '',
-                        subjectId: widget.session.subjectId ?? '',
-                        chapterId: widget.session.chapterId ?? '',
-                        timePerQuestion: widget.session.timePerQuestion ?? 1,
-                        quizDuration: widget.session.quizDuration ?? 10,
-                      );
+                      await provider.submitQuiz();
                     },
                   );
 

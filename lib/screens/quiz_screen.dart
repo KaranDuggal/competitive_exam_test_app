@@ -165,14 +165,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     else
                       ElevatedButton(
                         onPressed: () async {
-                          await provider.submitQuiz(
-                            quizSetId: widget.session.quizSetId ?? '',
-                            subjectId: widget.session.subjectId ?? '',
-                            chapterId: widget.session.chapterId ?? '',
-                            timePerQuestion:
-                                widget.session.timePerQuestion ?? 1,
-                            quizDuration: widget.session.quizDuration ?? 10,
-                          );
+                          await provider.submitQuiz();
                           context.go('/result');
                         },
                         style: ElevatedButton.styleFrom(

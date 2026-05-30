@@ -287,33 +287,19 @@ class QuizProvider extends ChangeNotifier {
   // SUBMIT QUIZ
   // =========================
 
-  Future<void> submitQuiz({
-    required String quizSetId,
-    required String subjectId,
-    required String chapterId,
-    required int timePerQuestion,
-    required int quizDuration,
-  }) async {
+  Future<void> submitQuiz() async {
     try {
       _isSubmittingQuiz = true;
-
       stopTimer();
-
       notifyListeners();
-
       int correctAnswers = 0;
-
       final answers = <QuizAnswerRequest>[];
-
       for (final question in _questions) {
         final selectedIndex = _userAnswers[question.id];
-
         final isCorrect = selectedIndex == question.correctOption;
-
         if (isCorrect) {
           correctAnswers++;
         }
-
         answers.add(
           QuizAnswerRequest(
             questionId: question.id,
@@ -324,31 +310,25 @@ class QuizProvider extends ChangeNotifier {
           ),
         );
       }
-
       final skippedAnswers = _questions.length - _userAnswers.length;
-
       final wrongAnswers = _questions.length - correctAnswers - skippedAnswers;
-
       final request = QuizAttemptRequestModel(
-        quizSetId: quizSetId,
-        subjectId: subjectId,
-        chapterId: chapterId,
+        quizSetId: session.quizSetId!,
+        subjectId: session.subjectId!,
+        chapterId: session.chapterId!,
         totalQuestions: _questions.length,
         correctAnswers: correctAnswers,
         wrongAnswers: wrongAnswers,
         skippedAnswers: skippedAnswers,
-        timePerQuestion: timePerQuestion,
-        quizDuration: quizDuration,
-        timeTaken: (quizDuration * 60) - _remainingSeconds,
+        timePerQuestion: session.timePerQuestion!,
+        quizDuration: session.quizDuration!,
+        timeTaken: (session.quizDuration! * 60) - _remainingSeconds,
         correctMarks: 4,
         negativeMarks: 1,
         answers: answers,
       );
-
       _quizAttemptResponse = await _repository.submitQuizAttempt(request);
-
       final data = _quizAttemptResponse!.data;
-
       _lastResult = ResultModel(
         totalQuestions: data.totalQuestions,
         correctAnswers: data.correctAnswers,
