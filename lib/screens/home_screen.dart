@@ -5,6 +5,7 @@ import '../core/widgets/app_app_bar.dart';
 import '../core/widgets/network_refresh_wrapper.dart';
 import '../core/widgets/refreshable_data_view.dart';
 import '../providers/home_provider.dart';
+import '../providers/quiz_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,10 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppAppBar(
-        title: 'Exam Jyoti',
-        showThemeButton: true,
-      ),
+      appBar: const AppAppBar(title: 'Exam Jyoti', showThemeButton: true),
       body: NetworkRefreshWrapper(
         onInternetRestored: () async {
           await context.read<HomeProvider>().fetchExams();
@@ -54,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     final exam = controller.exams[index];
                     return GestureDetector(
                       onTap: () {
+                        context.read<QuizProvider>().setExam(exam.id);
                         context.push('/subjects/${exam.id}');
                       },
                       child: Card(

@@ -18,16 +18,15 @@ class _QuizSetScreenState extends State<QuizSetScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() =>
-        context.read<QuizProvider>().loadQuizSets(widget.chapterId));
+    Future.microtask(
+      () => context.read<QuizProvider>().loadQuizSets(widget.chapterId),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppAppBar(
-        title: 'Quiz Sets',
-      ),
+      appBar: const AppAppBar(title: 'Quiz Sets'),
       body: NetworkRefreshWrapper(
         onInternetRestored: () async {
           await context.read<QuizProvider>().loadQuizSets(widget.chapterId);
@@ -48,11 +47,15 @@ class _QuizSetScreenState extends State<QuizSetScreen> {
                   return Card(
                     margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
-                      title: Text(quizSet.name,
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      title: Text(
+                        quizSet.name,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       trailing: const Icon(Icons.quiz_outlined),
-                      onTap: () =>
-                          context.push('/quiz-instruction/${quizSet.id}'),
+                      onTap: () {
+                        context.read<QuizProvider>().setExam(quizSet.id);
+                        context.push('/quiz-instruction/${quizSet.id}');
+                      },
                     ),
                   );
                 },

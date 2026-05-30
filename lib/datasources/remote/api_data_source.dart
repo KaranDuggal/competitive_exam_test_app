@@ -3,6 +3,8 @@ import 'package:dio/dio.dart';
 import '../../core/services/token_service.dart';
 
 import '../../models/exam_model.dart';
+import '../../models/quiz_attempt_request_model.dart';
+import '../../models/quiz_attempt_response_model.dart';
 import '../../models/subject_model.dart';
 import '../../models/chapter_model.dart';
 import '../../models/quiz_set_model.dart';
@@ -109,5 +111,12 @@ class ApiDataSource {
     );
 
     return AuthModel.fromJson(response.data);
+  }
+
+  Future<QuizAttemptResponseModel> submitQuizAttempt(
+    QuizAttemptRequestModel request,
+  ) async {
+    final response = await _dio.post('/quiz-attempts', data: request.toJson());
+    return QuizAttemptResponseModel.fromJson(response.data);
   }
 }

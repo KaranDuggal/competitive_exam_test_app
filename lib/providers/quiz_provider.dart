@@ -4,17 +4,18 @@ import 'package:flutter/material.dart';
 
 import '../models/chapter_model.dart';
 import '../models/question_model.dart';
+import '../models/quiz_attempt_request_model.dart';
+import '../models/quiz_attempt_response_model.dart';
 import '../models/quiz_set_model.dart';
 import '../models/result_model.dart';
 import '../models/subject_model.dart';
+import '../models/quiz_session_model.dart';
 import '../repositories/quiz_repository.dart';
 
 class QuizProvider extends ChangeNotifier {
   final QuizRepository _repository;
 
-  QuizProvider({
-    required QuizRepository repository,
-  }) : _repository = repository;
+  QuizProvider({required QuizRepository repository}) : _repository = repository;
 
   // =========================
   // SUBJECTS
@@ -70,6 +71,14 @@ class QuizProvider extends ChangeNotifier {
 
   ResultModel? _lastResult;
 
+  bool _isSubmittingQuiz = false;
+
+  bool get isSubmittingQuiz => _isSubmittingQuiz;
+
+  QuizAttemptResponseModel? _quizAttemptResponse;
+
+  QuizAttemptResponseModel? get quizAttemptResponse => _quizAttemptResponse;
+
   ResultModel? get lastResult => _lastResult;
 
   // =========================
@@ -94,14 +103,18 @@ class QuizProvider extends ChangeNotifier {
 
   int get remainingSeconds => _remainingSeconds;
 
-  String get formattedTime {
-    final minutes = (_remainingSeconds ~/ 60)
-        .toString()
-        .padLeft(2, '0');
+  // =========================
+  // QUIZ SESSION
+  // =========================
 
-    final seconds = (_remainingSeconds % 60)
-        .toString()
-        .padLeft(2, '0');
+  QuizSessionData _session = const QuizSessionData();
+
+  QuizSessionData get session => _session;
+
+  String get formattedTime {
+    final minutes = (_remainingSeconds ~/ 60).toString().padLeft(2, '0');
+
+    final seconds = (_remainingSeconds % 60).toString().padLeft(2, '0');
 
     return '$minutes:$seconds';
   }
@@ -113,25 +126,21 @@ class QuizProvider extends ChangeNotifier {
   }) {
     stopTimer();
 
-    _remainingSeconds =
-        totalQuestions * minutesPerQuestion * 60;
+    _remainingSeconds = totalQuestions * minutesPerQuestion * 60;
 
     notifyListeners();
 
-    _timer = Timer.periodic(
-      const Duration(seconds: 1),
-      (timer) {
-        if (_remainingSeconds > 0) {
-          _remainingSeconds--;
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_remainingSeconds > 0) {
+        _remainingSeconds--;
 
-          notifyListeners();
-        } else {
-          stopTimer();
+        notifyListeners();
+      } else {
+        stopTimer();
 
-          onTimeUp();
-        }
-      },
-    );
+        onTimeUp();
+      }
+    });
   }
 
   void stopTimer() {
@@ -224,9 +233,7 @@ class QuizProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _questions = await _repository.getQuestions(
-        quizSetId,
-      );
+      _questions = await _repository.getQuestions(quizSetId);
 
       _currentQuestionIndex = 0;
 
@@ -246,10 +253,7 @@ class QuizProvider extends ChangeNotifier {
   // SELECT ANSWER
   // =========================
 
-  void selectAnswer(
-    String questionId,
-    int selectedIndex,
-  ) {
+  void selectAnswer(String questionId, int selectedIndex) {
     _userAnswers[questionId] = selectedIndex;
 
     notifyListeners();
@@ -260,8 +264,7 @@ class QuizProvider extends ChangeNotifier {
   // =========================
 
   void nextQuestion() {
-    if (_currentQuestionIndex <
-        _questions.length - 1) {
+    if (_currentQuestionIndex < _questions.length - 1) {
       _currentQuestionIndex++;
 
       notifyListeners();
@@ -284,30 +287,81 @@ class QuizProvider extends ChangeNotifier {
   // SUBMIT QUIZ
   // =========================
 
-  void submitQuiz() {
-    stopTimer();
+  Future<void> submitQuiz({
+    required String quizSetId,
+    required String subjectId,
+    required String chapterId,
+    required int timePerQuestion,
+    required int quizDuration,
+  }) async {
+    try {
+      _isSubmittingQuiz = true;
 
-    int correctAnswers = 0;
+      stopTimer();
 
-    for (final question in _questions) {
-      if (_userAnswers[question.id] ==
-          question.correctOption) {
-        correctAnswers++;
+      notifyListeners();
+
+      int correctAnswers = 0;
+
+      final answers = <QuizAnswerRequest>[];
+
+      for (final question in _questions) {
+        final selectedIndex = _userAnswers[question.id];
+
+        final isCorrect = selectedIndex == question.correctOption;
+
+        if (isCorrect) {
+          correctAnswers++;
+        }
+
+        answers.add(
+          QuizAnswerRequest(
+            questionId: question.id,
+            selectedAnswer: selectedIndex != null
+                ? question.options[selectedIndex]
+                : null,
+            isCorrect: isCorrect,
+          ),
+        );
       }
+
+      final skippedAnswers = _questions.length - _userAnswers.length;
+
+      final wrongAnswers = _questions.length - correctAnswers - skippedAnswers;
+
+      final request = QuizAttemptRequestModel(
+        quizSetId: quizSetId,
+        subjectId: subjectId,
+        chapterId: chapterId,
+        totalQuestions: _questions.length,
+        correctAnswers: correctAnswers,
+        wrongAnswers: wrongAnswers,
+        skippedAnswers: skippedAnswers,
+        timePerQuestion: timePerQuestion,
+        quizDuration: quizDuration,
+        timeTaken: (quizDuration * 60) - _remainingSeconds,
+        correctMarks: 4,
+        negativeMarks: 1,
+        answers: answers,
+      );
+
+      _quizAttemptResponse = await _repository.submitQuizAttempt(request);
+
+      final data = _quizAttemptResponse!.data;
+
+      _lastResult = ResultModel(
+        totalQuestions: data.totalQuestions,
+        correctAnswers: data.correctAnswers,
+        wrongAnswers: data.wrongAnswers,
+        percentage: data.accuracy,
+      );
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      _isSubmittingQuiz = false;
+
+      notifyListeners();
     }
-
-    _lastResult = ResultModel(
-      totalQuestions: _questions.length,
-      correctAnswers: correctAnswers,
-      wrongAnswers:
-          _questions.length - correctAnswers,
-      percentage: _questions.isEmpty
-          ? 0
-          : (correctAnswers / _questions.length) *
-              100,
-    );
-
-    notifyListeners();
   }
 
   // =========================
@@ -328,6 +382,42 @@ class QuizProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setExam(String examId) {
+    _session = _session.copyWith(examId: examId);
+
+    notifyListeners();
+  }
+
+  void setSubject(String subjectId) {
+    _session = _session.copyWith(subjectId: subjectId);
+
+    notifyListeners();
+  }
+
+  void setChapter(String chapterId) {
+    _session = _session.copyWith(chapterId: chapterId);
+
+    notifyListeners();
+  }
+
+  void setQuizSet(String quizSetId) {
+    _session = _session.copyWith(quizSetId: quizSetId);
+
+    notifyListeners();
+  }
+
+  void setQuizConfiguration({
+    required int timePerQuestion,
+    required int quizDuration,
+  }) {
+    _session = _session.copyWith(
+      timePerQuestion: timePerQuestion,
+      quizDuration: quizDuration,
+    );
+
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     stopTimer();
@@ -335,3 +425,10 @@ class QuizProvider extends ChangeNotifier {
     super.dispose();
   }
 }
+// =========================
+// QUIZ SESSION
+// =========================
+
+QuizSessionData _session = const QuizSessionData();
+
+QuizSessionData get session => _session;

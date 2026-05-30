@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
+import 'package:provider/provider.dart';
+import '../../providers/quiz_provider.dart';
 import '../../screens/subject_screen.dart';
 import '../../screens/chapter_screen.dart';
 import '../../screens/quiz_set_screen.dart';
@@ -73,6 +74,7 @@ class AppRouter {
 
           return QuizInstructionScreen(
             quizSetId: quizSetId,
+            session: context.read<QuizProvider>().session,
           );
         },
       ),
@@ -85,6 +87,7 @@ class AppRouter {
 
           return QuizScreen(
             quizSetId: quizSetId,
+            session: context.read<QuizProvider>().session,
           );
         },
       ),

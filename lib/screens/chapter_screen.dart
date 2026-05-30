@@ -18,16 +18,15 @@ class _ChapterScreenState extends State<ChapterScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() =>
-        context.read<QuizProvider>().loadChapters(widget.subjectId));
+    Future.microtask(
+      () => context.read<QuizProvider>().loadChapters(widget.subjectId),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppAppBar(
-        title: 'Chapters',
-      ),
+      appBar: const AppAppBar(title: 'Chapters'),
       body: NetworkRefreshWrapper(
         onInternetRestored: () async {
           await context.read<QuizProvider>().loadChapters(widget.subjectId);
@@ -48,10 +47,15 @@ class _ChapterScreenState extends State<ChapterScreen> {
                   return Card(
                     margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
-                      title: Text(chapter.name,
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      title: Text(
+                        chapter.name,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: () => context.push('/quiz-sets/${chapter.id}'),
+                      onTap: () {
+                        context.read<QuizProvider>().setExam(chapter.id);
+                        context.push('/quiz-sets/${chapter.id}');
+                      },
                     ),
                   );
                 },
