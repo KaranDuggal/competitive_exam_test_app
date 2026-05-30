@@ -11,6 +11,7 @@ import '../models/result_model.dart';
 import '../models/subject_model.dart';
 import '../models/quiz_session_model.dart';
 import '../repositories/quiz_repository.dart';
+import '../core/services/token_service.dart';
 
 class QuizProvider extends ChangeNotifier {
   final QuizRepository _repository;
@@ -327,6 +328,22 @@ class QuizProvider extends ChangeNotifier {
         negativeMarks: 1,
         answers: answers,
       );
+      final token = await TokenService.getToken();
+      if (token == null) {
+        _lastResult = ResultModel(
+          totalQuestions: _questions.length,
+          correctAnswers: correctAnswers,
+          wrongAnswers: wrongAnswers,
+          percentage: _questions.isEmpty
+              ? 0
+              : (correctAnswers / _questions.length) * 100,
+        );
+
+        _isSubmittingQuiz = false;
+        notifyListeners();
+
+        return;
+      }
       _quizAttemptResponse = await _repository.submitQuizAttempt(request);
       final data = _quizAttemptResponse!.data;
       _lastResult = ResultModel(
