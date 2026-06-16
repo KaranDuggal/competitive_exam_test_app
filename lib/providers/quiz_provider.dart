@@ -321,7 +321,7 @@ class QuizProvider extends ChangeNotifier {
         correctAnswers: correctAnswers,
         wrongAnswers: wrongAnswers,
         skippedAnswers: skippedAnswers,
-        timePerQuestion: session.timePerQuestion!,
+        timePerQuestion: session.timePerQuestion,
         quizDuration: session.quizDuration!,
         timeTaken: (session.quizDuration! * 60) - _remainingSeconds,
         correctMarks: 4,
