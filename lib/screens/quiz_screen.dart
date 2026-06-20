@@ -11,11 +11,7 @@ class QuizScreen extends StatefulWidget {
   final QuizSessionData session;
   final String quizSetId;
 
-  const QuizScreen({
-    super.key,
-    required this.session,
-    required this.quizSetId,
-  });
+  const QuizScreen({super.key, required this.session, required this.quizSetId});
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
@@ -23,9 +19,8 @@ class QuizScreen extends StatefulWidget {
 
 class _QuizScreenState extends State<QuizScreen> {
   late QuizProvider _quizProvider;
-
-  final ScrollController _scrollController =
-      ScrollController();
+  final ScrollController _scrollController = ScrollController();
+  bool _timerStarted = false;
 
   @override
   void initState() {
@@ -37,10 +32,7 @@ class _QuizScreenState extends State<QuizScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    _quizProvider = Provider.of<QuizProvider>(
-      context,
-      listen: false,
-    );
+    _quizProvider = Provider.of<QuizProvider>(context, listen: false);
   }
 
   @override
@@ -50,21 +42,17 @@ class _QuizScreenState extends State<QuizScreen> {
     _quizProvider.stopTimer();
 
     _scrollController.dispose();
-
+    _timerStarted = false;
     super.dispose();
   }
 
-  void _goToNextQuestion(
-    QuizProvider provider,
-  ) {
+  void _goToNextQuestion(QuizProvider provider) {
     _scrollController.jumpTo(0);
 
     provider.nextQuestion();
   }
 
-  void _goToPreviousQuestion(
-    QuizProvider provider,
-  ) {
+  void _goToPreviousQuestion(QuizProvider provider) {
     _scrollController.jumpTo(0);
 
     provider.previousQuestion();
@@ -79,35 +67,23 @@ class _QuizScreenState extends State<QuizScreen> {
           Consumer<QuizProvider>(
             builder: (context, provider, _) {
               return Padding(
-                padding:
-                    const EdgeInsets.symmetric(
-                  horizontal: 16,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   children: [
-                    const Icon(
-                      Icons.timer,
-                      size: 18,
-                    ),
+                    const Icon(Icons.timer, size: 18),
 
                     const SizedBox(width: 5),
 
                     Text(
                       provider.formattedTime,
-                      style: const TextStyle(
-                        fontWeight:
-                            FontWeight.bold,
-                      ),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
 
                     const SizedBox(width: 15),
 
                     Text(
                       "${provider.currentQuestionIndex + 1}/${provider.questions.length}",
-                      style: const TextStyle(
-                        fontWeight:
-                            FontWeight.bold,
-                      ),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -117,285 +93,180 @@ class _QuizScreenState extends State<QuizScreen> {
         ],
       ),
       body: Consumer<QuizProvider>(
-        builder: (
-          context,
-          provider,
-          child,
-        ) {
+        builder: (context, provider, child) {
           if (provider.isLoading) {
-            return const Center(
-              child:
-                  CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (provider.questions.isEmpty) {
-            return const Center(
-              child: Text(
-                "No questions available",
-              ),
-            );
+            return const Center(child: Text("No questions available"));
           }
 
-          final question = provider.questions[
-              provider
-                  .currentQuestionIndex];
+          if (!_timerStarted) {
+            _timerStarted = true;
 
-          final selectedIndex =
-              provider.userAnswers[
-                  question.id];
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              provider.startTimer(
+                totalQuestions: provider.questions.length,
+
+                minutesPerQuestion: widget.session.timePerQuestion,
+
+                onTimeUp: () async {
+                  if (provider.isSubmittingQuiz) {
+                    return;
+                  }
+
+                  await provider.submitQuiz();
+
+                  if (context.mounted) {
+                    context.go("/result");
+                  }
+                },
+              );
+            });
+          }
+
+          final question = provider.questions[provider.currentQuestionIndex];
+
+          final selectedIndex = provider.userAnswers[question.id];
 
           return SafeArea(
             child: Padding(
-              padding:
-                  const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   /// Scrollable Content
                   Expanded(
-                    child:
-                        SingleChildScrollView(
-                      controller:
-                          _scrollController,
+                    child: SingleChildScrollView(
+                      controller: _scrollController,
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment
-                                .start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           LinearProgressIndicator(
                             value:
-                                (provider.currentQuestionIndex +
-                                        1) /
-                                    provider
-                                        .questions
-                                        .length,
-                            borderRadius:
-                                BorderRadius
-                                    .circular(
-                              10,
-                            ),
+                                (provider.currentQuestionIndex + 1) /
+                                provider.questions.length,
+                            borderRadius: BorderRadius.circular(10),
                           ),
 
-                          const SizedBox(
-                            height: 24,
-                          ),
+                          const SizedBox(height: 24),
 
                           Text(
                             question.text,
-                            style:
-                                const TextStyle(
+                            style: const TextStyle(
                               fontSize: 20,
-                              fontWeight:
-                                  FontWeight
-                                      .w600,
+                              fontWeight: FontWeight.w600,
                               height: 1.5,
                             ),
                           ),
 
-                          const SizedBox(
-                            height: 24,
-                          ),
+                          const SizedBox(height: 24),
 
-                          ...List.generate(
-                            question
-                                .options.length,
-                            (index) {
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.only(
-                                  bottom: 12,
-                                ),
-                                child:
-                                    InkWell(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                    14,
+                          ...List.generate(question.options.length, (index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(14),
+                                onTap: () {
+                                  provider.selectAnswer(question.id, index);
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(
+                                      color: selectedIndex == index
+                                          ? Colors.blue
+                                          : Colors.grey.shade400,
+                                      width: selectedIndex == index ? 2 : 1,
+                                    ),
+                                    color: selectedIndex == index
+                                        ? Colors.blue.withOpacity(0.08)
+                                        : null,
                                   ),
-                                  onTap: () {
-                                    provider
-                                        .selectAnswer(
-                                      question
-                                          .id,
-                                      index,
-                                    );
-                                  },
-                                  child:
-                                      Container(
-                                    width: double
-                                        .infinity,
-                                    padding:
-                                        const EdgeInsets.all(
-                                      16,
-                                    ),
-                                    decoration:
-                                        BoxDecoration(
-                                      borderRadius:
-                                          BorderRadius.circular(
-                                        14,
-                                      ),
-                                      border:
-                                          Border.all(
-                                        color:
-                                            selectedIndex ==
-                                                    index
-                                                ? Colors
-                                                    .blue
-                                                : Colors
-                                                    .grey
-                                                    .shade400,
-                                        width:
-                                            selectedIndex ==
-                                                    index
-                                                ? 2
-                                                : 1,
-                                      ),
-                                      color:
-                                          selectedIndex ==
-                                                  index
-                                              ? Colors
-                                                  .blue
-                                                  .withOpacity(
-                                                  0.08,
-                                                )
-                                              : null,
-                                    ),
-                                    child:
-                                        Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment
-                                              .start,
-                                      children: [
-                                        CircleAvatar(
-                                          radius:
-                                              14,
-                                          backgroundColor:
-                                              selectedIndex ==
-                                                      index
-                                                  ? Colors
-                                                      .blue
-                                                  : Colors
-                                                      .grey,
-                                          child:
-                                              Text(
-                                            String.fromCharCode(
-                                              65 +
-                                                  index,
-                                            ),
-                                            style:
-                                                const TextStyle(
-                                              color:
-                                                  Colors.white,
-                                              fontSize:
-                                                  12,
-                                            ),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 14,
+                                        backgroundColor: selectedIndex == index
+                                            ? Colors.blue
+                                            : Colors.grey,
+                                        child: Text(
+                                          String.fromCharCode(65 + index),
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 12,
                                           ),
                                         ),
+                                      ),
 
-                                        const SizedBox(
-                                          width:
-                                              14,
-                                        ),
+                                      const SizedBox(width: 14),
 
-                                        Expanded(
-                                          child:
-                                              Text(
-                                            question.options[
-                                                index],
-                                            style:
-                                                const TextStyle(
-                                              fontSize:
-                                                  16,
-                                              height:
-                                                  1.5,
-                                            ),
+                                      Expanded(
+                                        child: Text(
+                                          question.options[index],
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            height: 1.5,
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              );
-                            },
-                          ),
+                              ),
+                            );
+                          }),
                         ],
                       ),
                     ),
                   ),
 
-                  const SizedBox(
-                    height: 16,
-                  ),
+                  const SizedBox(height: 16),
 
                   /// Bottom Navigation
                   Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment
-                            .spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      if (provider
-                              .currentQuestionIndex >
-                          0)
+                      if (provider.currentQuestionIndex > 0)
                         TextButton(
                           onPressed: () {
-                            _goToPreviousQuestion(
-                              provider,
-                            );
+                            _goToPreviousQuestion(provider);
                           },
-                          child: const Text(
-                            "Previous",
-                          ),
+                          child: const Text("Previous"),
                         )
                       else
                         const SizedBox(),
 
-                      if (provider
-                              .currentQuestionIndex <
-                          provider.questions
-                                  .length -
-                              1)
+                      if (provider.currentQuestionIndex <
+                          provider.questions.length - 1)
                         ElevatedButton(
                           onPressed: () {
-                            _goToNextQuestion(
-                              provider,
-                            );
+                            _goToNextQuestion(provider);
                           },
-                          child:
-                              const Text(
-                            "Next",
-                          ),
+                          child: const Text("Next"),
                         )
                       else
                         ElevatedButton(
-                          onPressed:
-                              () async {
-                            _scrollController
-                                .jumpTo(
-                              0,
-                            );
+                          onPressed: () async {
+                            _scrollController.jumpTo(0);
 
-                            await provider
-                                .submitQuiz();
+                            await provider.submitQuiz();
 
-                            if (!context
-                                .mounted) {
+                            if (!context.mounted) {
                               return;
                             }
 
-                            context.go(
-                              "/result",
-                            );
+                            context.go("/result");
                           },
-                          style:
-                              ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Colors.green,
-                            foregroundColor:
-                                Colors.white,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
                           ),
-                          child:
-                              const Text(
-                            "Submit Quiz",
-                          ),
+                          child: const Text("Submit Quiz"),
                         ),
                     ],
                   ),
