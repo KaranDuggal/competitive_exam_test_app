@@ -11,6 +11,7 @@ import '../../models/chapter_model.dart';
 import '../../models/quiz_set_model.dart';
 import '../../models/question_model.dart';
 import '../../models/auth_model.dart';
+import '../../models/quiz_history_model.dart';
 
 class ApiDataSource {
   final Dio _dio;
@@ -114,6 +115,14 @@ class ApiDataSource {
     return AuthModel.fromJson(response.data);
   }
 
+  Future<List<QuizHistoryModel>> getQuizHistory() async {
+    final response = await _dio.get('/profile/history');
+
+    final List data = response.data['data'];
+
+    return data.map((e) => QuizHistoryModel.fromJson(e)).toList();
+  }
+
   Future<QuizAttemptResponseModel> submitQuizAttempt(
     QuizAttemptRequestModel request,
   ) async {
@@ -122,10 +131,8 @@ class ApiDataSource {
   }
 
   Future<ProfileModel> getProfile() async {
-  final response = await _dio.get('/profile/me');
+    final response = await _dio.get('/profile/me');
 
-  return ProfileModel.fromJson(
-    response.data['data'],
-  );
-}
+    return ProfileModel.fromJson(response.data['data']);
+  }
 }
