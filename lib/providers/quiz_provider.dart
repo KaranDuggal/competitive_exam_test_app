@@ -100,6 +100,8 @@ class QuizProvider extends ChangeNotifier {
 
   Timer? _timer;
 
+  DateTime? _quizStartTime;
+
   int _remainingSeconds = 0;
 
   int get remainingSeconds => _remainingSeconds;
@@ -121,28 +123,31 @@ class QuizProvider extends ChangeNotifier {
   }
 
   void startTimer({
-    required int totalQuestions,
-    required int minutesPerQuestion,
-    required VoidCallback onTimeUp,
-  }) {
-    stopTimer();
+  required int totalQuestions,
+  required int minutesPerQuestion,
+  required VoidCallback onTimeUp,
+}) {
+  stopTimer();
 
-    _remainingSeconds = totalQuestions * minutesPerQuestion * 60;
+  _quizStartTime = DateTime.now();
 
-    notifyListeners();
+  _remainingSeconds = totalQuestions * minutesPerQuestion * 60;
 
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+  notifyListeners();
+
+  _timer = Timer.periodic(
+    const Duration(seconds: 1),
+    (timer) {
       if (_remainingSeconds > 0) {
         _remainingSeconds--;
-
         notifyListeners();
       } else {
         stopTimer();
-
         onTimeUp();
       }
-    });
-  }
+    },
+  );
+}
 
   void stopTimer() {
     _timer?.cancel();
@@ -313,6 +318,7 @@ class QuizProvider extends ChangeNotifier {
       }
       final skippedAnswers = _questions.length - _userAnswers.length;
       final wrongAnswers = _questions.length - correctAnswers - skippedAnswers;
+      final timeTaken = DateTime.now().difference(_quizStartTime!).inSeconds;
       final request = QuizAttemptRequestModel(
         quizSetId: session.quizSetId!,
         subjectId: session.subjectId!,
@@ -323,7 +329,7 @@ class QuizProvider extends ChangeNotifier {
         skippedAnswers: skippedAnswers,
         timePerQuestion: session.timePerQuestion,
         quizDuration: session.quizDuration!,
-        timeTaken: (session.quizDuration! * 60) - _remainingSeconds,
+        timeTaken: timeTaken,
         correctMarks: 4,
         negativeMarks: 1,
         answers: answers,
