@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
 import '../core/widgets/google_login_button.dart';
@@ -17,108 +18,131 @@ class PointsScreen extends StatelessWidget {
           }
 
           if (authProvider.isLoggedIn && authProvider.user != null) {
-            final user = authProvider.user!;
-
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-
-                  children: [
-                    CircleAvatar(
-                      radius: 45,
-
-                      backgroundImage: user.photoUrl != null
-                          ? NetworkImage(user.photoUrl!)
-                          : null,
-
-                      child: user.photoUrl == null
-                          ? const Icon(Icons.person, size: 40)
-                          : null,
+            return SafeArea(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: 5,
+                itemBuilder: (context, index) {
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
                     ),
-
-                    const SizedBox(height: 20),
-
-                    Text(
-                      user.name,
-
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    Text(
-                      user.email,
-
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-
-                    const SizedBox(height: 30),
-
-                    Container(
-                      padding: const EdgeInsets.all(20),
-
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.primary.withOpacity(0.08),
-                      ),
-
+                    child: Padding(
+                      padding: const EdgeInsets.all(18),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          /// Quiz Name
                           const Text(
-                            'Coming Soon',
-
+                            "Quiz 1",
                             style: TextStyle(
-                              fontSize: 22,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
 
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 6),
 
                           Text(
-                            'Points, leaderboard, achievements, and quiz analytics will appear here.',
-
-                            textAlign: TextAlign.center,
-
+                            "Math • Distance and Time",
                             style: TextStyle(
+                              color: Colors.grey.shade600,
                               fontSize: 15,
-                              height: 1.5,
-                              color: Colors.grey.shade700,
                             ),
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          /// Circle
+                          Center(
+                            child: CircularPercentIndicator(
+                              radius: 60,
+                              lineWidth: 10,
+                              percent: 0.75,
+                              animation: true,
+                              circularStrokeCap: CircularStrokeCap.round,
+                              progressColor: Colors.green,
+                              backgroundColor: Colors.grey.shade300,
+                              center: const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "75%",
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text("Accuracy"),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 24),
+
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildStat(
+                                  "Correct",
+                                  "15",
+                                  Colors.green,
+                                ),
+                              ),
+                              Expanded(
+                                child: _buildStat("Wrong", "3", Colors.red),
+                              ),
+                              Expanded(
+                                child: _buildStat(
+                                  "Skipped",
+                                  "2",
+                                  Colors.orange,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const Divider(height: 32),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: const [
+                              Row(
+                                children: [
+                                  Icon(Icons.stars, color: Colors.amber),
+                                  SizedBox(width: 6),
+                                  Text(
+                                    "87 Points",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Icon(Icons.timer),
+                                  SizedBox(width: 6),
+                                  Text("08:00"),
+                                ],
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 14),
+
+                          Text(
+                            "28 May 2026",
+                            style: TextStyle(color: Colors.grey.shade600),
                           ),
                         ],
                       ),
                     ),
-
-                    const SizedBox(height: 30),
-
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        try {
-                          await authProvider.logout();
-                        } catch (e) {
-                          debugPrint(e.toString());
-                        }
-                      },
-
-                      icon: const Icon(Icons.logout),
-
-                      label: const Text('Logout'),
-                    ),
-                  ],
-                ),
+                  );
+                },
               ),
             );
           }
@@ -168,4 +192,42 @@ class PointsScreen extends StatelessWidget {
       ),
     );
   }
+
+  static Widget _buildStat(
+  String title,
+  String value,
+  Color color,
+) {
+  return Column(
+    children: [
+      Container(
+        width: 14,
+        height: 14,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+        ),
+      ),
+
+      const SizedBox(height: 8),
+
+      Text(
+        value,
+        style: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+
+      const SizedBox(height: 4),
+
+      Text(
+        title,
+        style: TextStyle(
+          color: Colors.grey.shade600,
+        ),
+      ),
+    ],
+  );
+}
 }
