@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import '../../core/services/token_service.dart';
 
 import '../../models/exam_model.dart';
+import '../../models/profile_model.dart';
 import '../../models/quiz_attempt_request_model.dart';
 import '../../models/quiz_attempt_response_model.dart';
 import '../../models/subject_model.dart';
@@ -119,4 +120,12 @@ class ApiDataSource {
     final response = await _dio.post('/quiz-attempts', data: request.toJson());
     return QuizAttemptResponseModel.fromJson(response.data);
   }
+
+  Future<ProfileModel> getProfile() async {
+  final response = await _dio.get('/profile/me');
+
+  return ProfileModel.fromJson(
+    response.data['data'],
+  );
+}
 }

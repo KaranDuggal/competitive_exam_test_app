@@ -5,10 +5,12 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'providers/home_provider.dart';
+import 'providers/profile_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/quiz_provider.dart';
 import 'providers/auth_provider.dart';
 
+import 'repositories/profile_repository.dart';
 import 'repositories/quiz_repository.dart';
 import 'repositories/auth_repository.dart';
 
@@ -22,33 +24,28 @@ import 'core/services/connectivity_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   final prefs = await SharedPreferences.getInstance();
-
   final apiDataSource = ApiDataSource(baseUrl: AppConfig.baseUrl);
-
   final quizRepository = QuizRepository(apiDataSource: apiDataSource);
-
   final authRepository = AuthRepository(apiDataSource: apiDataSource);
-
   final authProvider = AuthProvider(repository: authRepository);
-
   await authProvider.loadUserSession();
-
   ConnectivityService.initialize();
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => HomeProvider(quizRepository)),
-
         ChangeNotifierProvider(create: (_) => ThemeProvider(prefs)),
-
         ChangeNotifierProvider(
           create: (_) => QuizProvider(repository: quizRepository),
         ),
-
         ChangeNotifierProvider(create: (_) => authProvider),
+        ChangeNotifierProvider(
+          create: (_) => ProfileProvider(
+            repository: ProfileRepository(apiDataSource: apiDataSource),
+          ),
+        ),
       ],
 
       child: const MyApp(),
@@ -65,15 +62,10 @@ class MyApp extends StatelessWidget {
       builder: (context, themeController, child) {
         return MaterialApp.router(
           title: 'Exam Jyoti',
-
           debugShowCheckedModeBanner: false,
-
           theme: AppThemes.lightTheme,
-
           darkTheme: AppThemes.darkTheme,
-
           themeMode: themeController.themeMode,
-
           routerConfig: AppRouter.router,
         );
       },
