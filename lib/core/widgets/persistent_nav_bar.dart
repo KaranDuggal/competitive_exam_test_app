@@ -5,6 +5,8 @@ import 'package:exam_jyoti/screens/home_screen.dart';
 import 'package:exam_jyoti/screens/points_screen.dart';
 import 'package:exam_jyoti/screens/profile_screen.dart';
 
+import '../../screens/leaderboard_screen.dart';
+
 class PersistentNavBar extends StatelessWidget {
   const PersistentNavBar({super.key});
 
@@ -21,6 +23,16 @@ class PersistentNavBar extends StatelessWidget {
           item: ItemConfig(
             icon: const Icon(Icons.home),
             title: 'Home',
+            activeForegroundColor: Colors.blue,
+            inactiveForegroundColor: Colors.grey,
+          ),
+        ),
+
+        PersistentTabConfig(
+          screen: const LeaderboardScreen(),
+          item: ItemConfig(
+            icon: const Icon(Icons.leaderboard),
+            title: 'Leaderboard',
             activeForegroundColor: Colors.blue,
             inactiveForegroundColor: Colors.grey,
           ),

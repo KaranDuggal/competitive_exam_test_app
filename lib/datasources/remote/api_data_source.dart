@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import '../../core/services/token_service.dart';
 
 import '../../models/exam_model.dart';
+import '../../models/leaderboard_response_model.dart';
 import '../../models/profile_model.dart';
 import '../../models/quiz_attempt_request_model.dart';
 import '../../models/quiz_attempt_response_model.dart';
@@ -135,4 +136,10 @@ class ApiDataSource {
 
     return ProfileModel.fromJson(response.data['data']);
   }
+
+  Future<LeaderboardResponseModel> getLeaderboard() async {
+  final response = await _dio.get('/leaderboard');
+
+  return LeaderboardResponseModel.fromJson(response.data);
+}
 }

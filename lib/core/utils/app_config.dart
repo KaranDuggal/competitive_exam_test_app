@@ -1,5 +1,5 @@
 class AppConfig {
-  static const String baseUrl = 'https://powerpoint-preferences-attacked-locally.trycloudflare.com';
+  static const String baseUrl = 'https://competing-mirrors-arm-render.trycloudflare.com';
   
   // App related strings
   static const String appName = 'Exam Jyoti';

@@ -5,11 +5,13 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'providers/home_provider.dart';
+import 'providers/leaderboard_provider.dart';
 import 'providers/profile_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/quiz_provider.dart';
 import 'providers/auth_provider.dart';
 
+import 'repositories/leaderboard_repository.dart';
 import 'repositories/profile_repository.dart';
 import 'repositories/quiz_repository.dart';
 import 'repositories/auth_repository.dart';
@@ -29,6 +31,7 @@ void main() async {
   final quizRepository = QuizRepository(apiDataSource: apiDataSource);
   final authRepository = AuthRepository(apiDataSource: apiDataSource);
   final authProvider = AuthProvider(repository: authRepository);
+  final leaderboardRepository = LeaderboardRepository(api: apiDataSource);
   await authProvider.loadUserSession();
   ConnectivityService.initialize();
 
@@ -45,6 +48,9 @@ void main() async {
           create: (_) => ProfileProvider(
             repository: ProfileRepository(apiDataSource: apiDataSource),
           ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LeaderboardProvider(repository: leaderboardRepository),
         ),
       ],
 
