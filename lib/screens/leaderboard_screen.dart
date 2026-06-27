@@ -101,7 +101,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                 points: leaderboard[1].totalPoints,
                                 photoUrl: leaderboard[1].photoUrl,
                                 height: 120,
-                                color: Colors.grey,
+                                color: Colors.blueGrey,
                               )
                             : const SizedBox(),
                       ),
@@ -114,7 +114,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                 points: leaderboard[0].totalPoints,
                                 photoUrl: leaderboard[0].photoUrl,
                                 height: 170,
-                                color: Colors.amber,
+                                color: Colors.orange,
                               )
                             : const SizedBox(),
                       ),
@@ -127,7 +127,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                 points: leaderboard[2].totalPoints,
                                 photoUrl: leaderboard[2].photoUrl,
                                 height: 100,
-                                color: Colors.brown,
+                                color: const Color(0xFFCD7F32),
                               )
                             : const SizedBox(),
                       ),
@@ -257,6 +257,9 @@ Widget _buildTopUser({
 }) {
   return Column(
     children: [
+      if (rank == 1)
+        const Icon(Icons.workspace_premium, color: Colors.orange, size: 34),
+      if (rank == 1) const SizedBox(height: 6),
       CircleAvatar(
         radius: rank == 1 ? 36 : 30,
         backgroundColor: color,
@@ -264,12 +267,14 @@ Widget _buildTopUser({
             ? NetworkImage(photoUrl)
             : null,
         child: (photoUrl == null || photoUrl.isEmpty)
-            ? Text(
-                "$rank",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+            ? Icon(
+                rank == 1
+                    ? Icons.emoji_events
+                    : rank == 2
+                    ? Icons.workspace_premium
+                    : Icons.military_tech,
+                color: Colors.white,
+                size: 22,
               )
             : null,
       ),
@@ -283,16 +288,26 @@ Widget _buildTopUser({
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
 
-      Text("$points pts", style: TextStyle(color: Colors.grey.shade600)),
+      Text("$points pts", style: TextStyle(color: Colors.blueGrey.shade600)),
 
       const SizedBox(height: 12),
 
       Container(
         height: height,
         decoration: BoxDecoration(
-          color: color.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [color.withOpacity(.85), color.withOpacity(.45)],
+          ),
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(.35),
+              blurRadius: 12,
+              offset: const Offset(0, 5),
+            ),
+          ],
         ),
       ),
     ],
