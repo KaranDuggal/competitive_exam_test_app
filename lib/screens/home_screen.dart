@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../core/widgets/app_app_bar.dart';
+import '../core/widgets/banner_ad_widget.dart';
 import '../core/widgets/network_refresh_wrapper.dart';
 import '../core/widgets/refreshable_data_view.dart';
 import '../providers/home_provider.dart';
@@ -86,6 +87,10 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           },
         ),
+      ),
+      bottomNavigationBar: const Material(
+        elevation: 8,
+        child: SafeArea(child: BannerAdWidget()),
       ),
     );
   }

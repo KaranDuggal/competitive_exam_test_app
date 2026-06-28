@@ -41,6 +41,7 @@ dependencies:
   connectivity_plus: ^7.1.1
   google_sign_in: ^7.2.0
   percent_indicator: ^4.2.5
+  google_mobile_ads: ^9.0.0
 
 dev_dependencies:
   flutter_test:

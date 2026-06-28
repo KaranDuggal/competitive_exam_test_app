@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
+import '../core/widgets/banner_ad_widget.dart';
 import '../core/widgets/google_login_button.dart';
 import '../providers/auth_provider.dart';
 import '../providers/profile_provider.dart';
@@ -340,6 +341,10 @@ class _PointsScreenState extends State<PointsScreen> {
             ),
           );
         },
+      ),
+      bottomNavigationBar: const Material(
+        elevation: 8,
+        child: SafeArea(child: BannerAdWidget()),
       ),
     );
   }

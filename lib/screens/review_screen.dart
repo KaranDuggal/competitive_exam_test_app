@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/widgets/app_app_bar.dart';
+import '../core/widgets/banner_ad_widget.dart';
 import '../providers/quiz_provider.dart';
 
 class ReviewScreen extends StatelessWidget {
@@ -110,6 +111,10 @@ class ReviewScreen extends StatelessWidget {
             },
           );
         },
+      ),
+      bottomNavigationBar: const Material(
+        elevation: 8,
+        child: SafeArea(child: BannerAdWidget()),
       ),
     );
   }

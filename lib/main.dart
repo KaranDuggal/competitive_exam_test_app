@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'package:provider/provider.dart';
 
@@ -26,6 +27,7 @@ import 'core/services/connectivity_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await MobileAds.instance.initialize();
   final prefs = await SharedPreferences.getInstance();
   final apiDataSource = ApiDataSource(baseUrl: AppConfig.baseUrl);
   final quizRepository = QuizRepository(apiDataSource: apiDataSource);
