@@ -42,6 +42,7 @@ dependencies:
   google_sign_in: ^7.2.0
   percent_indicator: ^4.2.5
   google_mobile_ads: ^9.0.0
+  flutter_native_splash: ^2.4.7
 
 dev_dependencies:
   flutter_test:
@@ -94,3 +95,20 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: assets/images/exam_jyoti_logo.png
+
+  color_dark: "#121212"
+  image_dark: assets/images/exam_jyoti_logo.png
+
+  android: true
+  ios: true
+
+  android_12:
+    color: "#FFFFFF"
+    image: assets/images/exam_jyoti_logo.png
+
+    color_dark: "#121212"
+    image_dark: assets/images/exam_jyoti_logo.png
