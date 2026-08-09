@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'core/services/interstitial_ad_service.dart';
 import 'providers/home_provider.dart';
 import 'providers/leaderboard_provider.dart';
 import 'providers/profile_provider.dart';
@@ -35,6 +36,8 @@ void main() async {
   final authProvider = AuthProvider(repository: authRepository);
   final leaderboardRepository = LeaderboardRepository(api: apiDataSource);
   await authProvider.loadUserSession();
+  final interstitialAdService = InterstitialAdService();
+  interstitialAdService.load();
   ConnectivityService.initialize();
 
   runApp(
@@ -53,6 +56,14 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => LeaderboardProvider(repository: leaderboardRepository),
+        ),
+        Provider<InterstitialAdService>(
+          create: (_) {
+            final service = InterstitialAdService();
+            service.load();
+            return service;
+          },
+          dispose: (_, service) => service.dispose(),
         ),
       ],
 

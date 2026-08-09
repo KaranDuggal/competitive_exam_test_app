@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+import '../core/services/interstitial_ad_service.dart';
 import '../core/widgets/app_app_bar.dart';
 import '../models/quiz_session_model.dart';
 import '../providers/quiz_provider.dart';
@@ -19,6 +20,7 @@ class QuizScreen extends StatefulWidget {
 
 class _QuizScreenState extends State<QuizScreen> {
   late QuizProvider _quizProvider;
+  late InterstitialAdService _interstitialAdService;
   final ScrollController _scrollController = ScrollController();
   bool _timerStarted = false;
 
@@ -33,6 +35,10 @@ class _QuizScreenState extends State<QuizScreen> {
     super.didChangeDependencies();
 
     _quizProvider = Provider.of<QuizProvider>(context, listen: false);
+    _interstitialAdService = Provider.of<InterstitialAdService>(
+      context,
+      listen: false,
+    );
   }
 
   @override
@@ -118,9 +124,17 @@ class _QuizScreenState extends State<QuizScreen> {
 
                   await provider.submitQuiz();
 
-                  if (context.mounted) {
-                    context.go("/result");
+                  if (!context.mounted) {
+                    return;
                   }
+
+                  _interstitialAdService.show(
+                    onFinished: () {
+                      if (context.mounted) {
+                        context.go("/result");
+                      }
+                    },
+                  );
                 },
               );
             });
@@ -253,14 +267,17 @@ class _QuizScreenState extends State<QuizScreen> {
                         ElevatedButton(
                           onPressed: () async {
                             _scrollController.jumpTo(0);
-
                             await provider.submitQuiz();
-
                             if (!context.mounted) {
                               return;
                             }
-
-                            context.go("/result");
+                            _interstitialAdService.show(
+                              onFinished: () {
+                                if (context.mounted) {
+                                  context.go("/result");
+                                }
+                              },
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
