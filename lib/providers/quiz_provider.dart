@@ -158,20 +158,17 @@ class QuizProvider extends ChangeNotifier {
 
   Future<void> loadSubjects(String examId) async {
     _isLoading = true;
-
     _error = null;
-
+    // Clear old exam's subjects immediately
+    _subjects = [];
     notifyListeners();
-
     try {
       _subjects = await _repository.getSubjects(examId);
     } catch (e) {
       _subjects = [];
-
       _error = e.toString();
     } finally {
       _isLoading = false;
-
       notifyListeners();
     }
   }
@@ -182,16 +179,14 @@ class QuizProvider extends ChangeNotifier {
 
   Future<void> loadChapters(String subjectId) async {
     _isLoading = true;
-
     _error = null;
-
+    // Clear old subject's chapters
+    _chapters = [];
     notifyListeners();
-
     try {
       _chapters = await _repository.getChapters(subjectId);
     } catch (e) {
       _chapters = [];
-
       _error = e.toString();
     } finally {
       _isLoading = false;
@@ -206,16 +201,14 @@ class QuizProvider extends ChangeNotifier {
 
   Future<void> loadQuizSets(String chapterId) async {
     _isLoading = true;
-
     _error = null;
-
+    // Clear old chapter's quiz sets
+    _quizSets = [];
     notifyListeners();
-
     try {
       _quizSets = await _repository.getQuizSets(chapterId);
     } catch (e) {
       _quizSets = [];
-
       _error = e.toString();
     } finally {
       _isLoading = false;
@@ -230,7 +223,8 @@ class QuizProvider extends ChangeNotifier {
 
   Future<void> loadQuestions(String quizSetId) async {
     _isLoading = true;
-
+    // Clear old quiz set's questions
+    _questions = [];
     _error = null;
 
     notifyListeners();
