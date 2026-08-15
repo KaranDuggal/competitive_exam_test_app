@@ -123,21 +123,19 @@ class QuizProvider extends ChangeNotifier {
   }
 
   void startTimer({
-  required int totalQuestions,
-  required int minutesPerQuestion,
-  required VoidCallback onTimeUp,
-}) {
-  stopTimer();
+    required int totalQuestions,
+    required int minutesPerQuestion,
+    required VoidCallback onTimeUp,
+  }) {
+    stopTimer();
 
-  _quizStartTime = DateTime.now();
+    _quizStartTime = DateTime.now();
 
-  _remainingSeconds = totalQuestions * minutesPerQuestion * 60;
+    _remainingSeconds = totalQuestions * minutesPerQuestion * 60;
 
-  notifyListeners();
+    notifyListeners();
 
-  _timer = Timer.periodic(
-    const Duration(seconds: 1),
-    (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_remainingSeconds > 0) {
         _remainingSeconds--;
         notifyListeners();
@@ -145,9 +143,8 @@ class QuizProvider extends ChangeNotifier {
         stopTimer();
         onTimeUp();
       }
-    },
-  );
-}
+    });
+  }
 
   void stopTimer() {
     _timer?.cancel();
@@ -295,6 +292,10 @@ class QuizProvider extends ChangeNotifier {
 
   Future<void> submitQuiz() async {
     try {
+      // Prevent multiple submissions
+      if (_isSubmittingQuiz) {
+        return;
+      }
       _isSubmittingQuiz = true;
       stopTimer();
       notifyListeners();

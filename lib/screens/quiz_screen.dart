@@ -265,25 +265,35 @@ class _QuizScreenState extends State<QuizScreen> {
                         )
                       else
                         ElevatedButton(
-                          onPressed: () async {
-                            _scrollController.jumpTo(0);
-                            await provider.submitQuiz();
-                            if (!context.mounted) {
-                              return;
-                            }
-                            _interstitialAdService.show(
-                              onFinished: () {
-                                if (context.mounted) {
-                                  context.go("/result");
-                                }
-                              },
-                            );
-                          },
+                          onPressed: provider.isSubmittingQuiz
+                              ? null
+                              : () async {
+                                  _scrollController.jumpTo(0);
+                                  await provider.submitQuiz();
+                                  if (!context.mounted) {
+                                    return;
+                                  }
+                                  _interstitialAdService.show(
+                                    onFinished: () {
+                                      if (context.mounted) {
+                                        context.go("/result");
+                                      }
+                                    },
+                                  );
+                                },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
                           ),
-                          child: const Text("Submit Quiz"),
+                          child: provider.isSubmittingQuiz
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text("Submit Quiz"),
                         ),
                     ],
                   ),
