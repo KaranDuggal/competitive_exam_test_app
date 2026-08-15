@@ -89,15 +89,18 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> logout() async {
     await _authService.signOut();
-
     await TokenService.removeToken();
-
     _user = null;
-
     _token = null;
-
     _isLoggedIn = false;
+    notifyListeners();
+  }
 
+  Future<void> clearSession() async {
+    await TokenService.removeToken();
+    _user = null;
+    _token = null;
+    _isLoggedIn = false;
     notifyListeners();
   }
 }

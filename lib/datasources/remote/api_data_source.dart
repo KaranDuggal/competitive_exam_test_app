@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../core/services/token_service.dart';
 
@@ -16,8 +17,9 @@ import '../../models/quiz_history_model.dart';
 
 class ApiDataSource {
   final Dio _dio;
+  final VoidCallback? onUnauthorized;
 
-  ApiDataSource({required String baseUrl})
+  ApiDataSource({required String baseUrl, this.onUnauthorized})
     : _dio = Dio(
         BaseOptions(
           baseUrl: baseUrl,
@@ -30,12 +32,17 @@ class ApiDataSource {
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           final token = await TokenService.getToken();
-
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
           }
-
           return handler.next(options);
+        },
+        onError: (DioException error, handler) async {
+          if (error.response?.statusCode == 401) {
+            await TokenService.removeToken();
+            onUnauthorized?.call();
+          }
+          return handler.next(error);
         },
       ),
     );
@@ -138,8 +145,8 @@ class ApiDataSource {
   }
 
   Future<LeaderboardResponseModel> getLeaderboard() async {
-  final response = await _dio.get('/leaderboard');
+    final response = await _dio.get('/leaderboard');
 
-  return LeaderboardResponseModel.fromJson(response.data);
-}
+    return LeaderboardResponseModel.fromJson(response.data);
+  }
 }
