@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import '../models/chapter_model.dart';
@@ -285,50 +286,50 @@ class QuizProvider extends ChangeNotifier {
   // =========================
 
   Future<void> submitQuiz() async {
-    try {
-      // Prevent multiple submissions
-      if (_isSubmittingQuiz) {
-        return;
+    // Prevent multiple submissions
+    if (_isSubmittingQuiz) {
+      return;
+    }
+    _isSubmittingQuiz = true;
+    stopTimer();
+    notifyListeners();
+    int correctAnswers = 0;
+    final answers = <QuizAnswerRequest>[];
+    for (final question in _questions) {
+      final selectedIndex = _userAnswers[question.id];
+      final isCorrect = selectedIndex == question.correctOption;
+      if (isCorrect) {
+        correctAnswers++;
       }
-      _isSubmittingQuiz = true;
-      stopTimer();
-      notifyListeners();
-      int correctAnswers = 0;
-      final answers = <QuizAnswerRequest>[];
-      for (final question in _questions) {
-        final selectedIndex = _userAnswers[question.id];
-        final isCorrect = selectedIndex == question.correctOption;
-        if (isCorrect) {
-          correctAnswers++;
-        }
-        answers.add(
-          QuizAnswerRequest(
-            questionId: question.id,
-            selectedAnswer: selectedIndex != null
-                ? question.options[selectedIndex]
-                : null,
-            isCorrect: isCorrect,
-          ),
-        );
-      }
-      final skippedAnswers = _questions.length - _userAnswers.length;
-      final wrongAnswers = _questions.length - correctAnswers - skippedAnswers;
-      final timeTaken = DateTime.now().difference(_quizStartTime!).inSeconds;
-      final request = QuizAttemptRequestModel(
-        quizSetId: session.quizSetId!,
-        subjectId: session.subjectId!,
-        chapterId: session.chapterId!,
-        totalQuestions: _questions.length,
-        correctAnswers: correctAnswers,
-        wrongAnswers: wrongAnswers,
-        skippedAnswers: skippedAnswers,
-        timePerQuestion: session.timePerQuestion,
-        quizDuration: session.quizDuration!,
-        timeTaken: timeTaken,
-        correctMarks: 4,
-        negativeMarks: 1,
-        answers: answers,
+      answers.add(
+        QuizAnswerRequest(
+          questionId: question.id,
+          selectedAnswer: selectedIndex != null
+              ? question.options[selectedIndex]
+              : null,
+          isCorrect: isCorrect,
+        ),
       );
+    }
+    final skippedAnswers = _questions.length - _userAnswers.length;
+    final wrongAnswers = _questions.length - correctAnswers - skippedAnswers;
+    final timeTaken = DateTime.now().difference(_quizStartTime!).inSeconds;
+    final request = QuizAttemptRequestModel(
+      quizSetId: session.quizSetId!,
+      subjectId: session.subjectId!,
+      chapterId: session.chapterId!,
+      totalQuestions: _questions.length,
+      correctAnswers: correctAnswers,
+      wrongAnswers: wrongAnswers,
+      skippedAnswers: skippedAnswers,
+      timePerQuestion: session.timePerQuestion,
+      quizDuration: session.quizDuration!,
+      timeTaken: timeTaken,
+      correctMarks: 4,
+      negativeMarks: 1,
+      answers: answers,
+    );
+    try {
       final token = await TokenService.getToken();
       if (token == null) {
         _lastResult = ResultModel(
@@ -354,10 +355,17 @@ class QuizProvider extends ChangeNotifier {
         percentage: data.accuracy,
       );
     } catch (e) {
+      if (e is DioException && e.response?.statusCode == 401) {
+        _lastResult = ResultModel(
+          totalQuestions: _questions.length,
+          correctAnswers: correctAnswers,
+          wrongAnswers: wrongAnswers,
+          percentage: _questions.isEmpty ? 0 : (correctAnswers / _questions.length) * 100,
+        );
+      }
       _error = e.toString();
     } finally {
       _isSubmittingQuiz = false;
-
       notifyListeners();
     }
   }
