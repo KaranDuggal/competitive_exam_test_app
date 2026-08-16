@@ -14,12 +14,14 @@ import '../../models/quiz_set_model.dart';
 import '../../models/question_model.dart';
 import '../../models/auth_model.dart';
 import '../../models/quiz_history_model.dart';
+import '../../providers/auth_provider.dart';
 
 class ApiDataSource {
   final Dio _dio;
   final VoidCallback? onUnauthorized;
+  final AuthProvider? authProvider;
 
-  ApiDataSource({required String baseUrl, this.onUnauthorized})
+  ApiDataSource({required String baseUrl, this.onUnauthorized, this.authProvider})
     : _dio = Dio(
         BaseOptions(
           baseUrl: baseUrl,
@@ -40,6 +42,7 @@ class ApiDataSource {
         onError: (DioException error, handler) async {
           if (error.response?.statusCode == 401) {
             await TokenService.removeToken();
+            await authProvider?.logout();
             onUnauthorized?.call();
           }
           return handler.next(error);

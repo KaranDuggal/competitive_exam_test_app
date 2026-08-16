@@ -1,26 +1,20 @@
 import 'package:flutter/material.dart';
-
 import '../models/leaderboard_response_model.dart';
 import '../models/leaderboard_user_model.dart';
 import '../repositories/leaderboard_repository.dart';
 
 class LeaderboardProvider extends ChangeNotifier {
   final LeaderboardRepository _repository;
-
   LeaderboardProvider({
     required LeaderboardRepository repository,
   }) : _repository = repository;
-
   // =========================
   // DATA
   // =========================
 
   List<LeaderboardUserModel> _leaderboard = [];
-
   List<LeaderboardUserModel> get leaderboard => _leaderboard;
-
   int _myRank = 0;
-
   int get myRank => _myRank;
 
   // =========================
@@ -28,7 +22,6 @@ class LeaderboardProvider extends ChangeNotifier {
   // =========================
 
   bool _isLoading = false;
-
   bool get isLoading => _isLoading;
 
   // =========================
@@ -36,7 +29,6 @@ class LeaderboardProvider extends ChangeNotifier {
   // =========================
 
   String? _error;
-
   String? get error => _error;
 
   // =========================
@@ -46,13 +38,9 @@ class LeaderboardProvider extends ChangeNotifier {
   Future<void> loadLeaderboard() async {
     _isLoading = true;
     _error = null;
-
     notifyListeners();
-
     try {
-      final LeaderboardResponseModel response =
-          await _repository.getLeaderboard();
-
+      final LeaderboardResponseModel response = await _repository.getLeaderboard();
       _leaderboard = response.leaderboard;
       _myRank = response.myRank;
     } catch (e) {

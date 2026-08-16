@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../core/widgets/google_login_button.dart';
 import '../providers/auth_provider.dart';
 import '../providers/leaderboard_provider.dart';
@@ -16,10 +15,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final auth = context.read<AuthProvider>();
-
       if (auth.isLoggedIn) {
         context.read<LeaderboardProvider>().loadLeaderboard();
       }
@@ -34,7 +31,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           if (authProvider.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-
           if (!authProvider.isLoggedIn) {
             return Padding(
               padding: const EdgeInsets.all(24),
@@ -50,9 +46,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-
                     const SizedBox(height: 16),
-
                     GoogleLoginButton(
                       onPressed: () async {
                         await authProvider.login();
@@ -72,19 +66,35 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           final myRank = leaderboardProvider.myRank;
 
           if (leaderboard.isEmpty) {
-            return const Center(child: Text("No leaderboard available"));
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    "No leaderboard available",
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      leaderboardProvider.loadLeaderboard();
+                    },
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Refresh'),
+                  ),
+                ],
+              ),
+            );
           }
 
           return SafeArea(
             child: Column(
               children: [
                 const SizedBox(height: 20),
-
                 const Text(
                   "Leaderboard",
                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                 ),
-
                 const SizedBox(height: 30),
 
                 /// TOP 3
@@ -105,7 +115,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               )
                             : const SizedBox(),
                       ),
-
                       Expanded(
                         child: leaderboard.isNotEmpty
                             ? _buildTopUser(
@@ -118,7 +127,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               )
                             : const SizedBox(),
                       ),
-
                       Expanded(
                         child: leaderboard.length > 2
                             ? _buildTopUser(
@@ -134,9 +142,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 24),
-
                 Card(
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   child: ListTile(
@@ -157,9 +163,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 16),
-
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -173,7 +177,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                           user.photoUrl != null &&
                           user.photoUrl!.isNotEmpty &&
                           user.photoUrl!.startsWith("http");
-
                       return Card(
                         margin: const EdgeInsets.only(bottom: 10),
                         child: ListTile(
@@ -189,9 +192,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                   ),
                                 ),
                               ),
-
                               const SizedBox(width: 8),
-
                               CircleAvatar(
                                 radius: 20,
                                 child: ClipOval(
@@ -210,16 +211,13 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               ),
                             ],
                           ),
-
                           title: Text(
                             user.name,
                             style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
-
                           subtitle: Text(
                             "${user.totalQuizAttempts} quizzes • ${user.averageAccuracy.toStringAsFixed(1)}%",
                           ),
-
                           trailing: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [

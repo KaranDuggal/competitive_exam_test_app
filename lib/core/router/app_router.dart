@@ -19,9 +19,7 @@ class AppRouter {
 
   static final GoRouter router = GoRouter(
     navigatorKey: navigatorKey,
-
     initialLocation: '/',
-
     routes: [
       GoRoute(
         path: '/',
@@ -29,7 +27,6 @@ class AppRouter {
           return const PersistentNavBar();
         },
       ),
-
       GoRoute(
         path: '/subjects/:examId',
         builder: (context, state) {
@@ -41,7 +38,6 @@ class AppRouter {
           );
         },
       ),
-
       GoRoute(
         path: '/chapters/:subjectId',
         builder: (context, state) {
@@ -53,52 +49,44 @@ class AppRouter {
           );
         },
       ),
-
       GoRoute(
         path: '/quiz-sets/:chapterId',
         builder: (context, state) {
           final chapterId =
               state.pathParameters['chapterId']!;
-
           return QuizSetScreen(
             chapterId: chapterId,
           );
         },
       ),
-
       GoRoute(
         path: '/quiz-instruction/:quizSetId',
         builder: (context, state) {
           final quizSetId =
               state.pathParameters['quizSetId']!;
-
           return QuizInstructionScreen(
             quizSetId: quizSetId,
             session: context.read<QuizProvider>().session,
           );
         },
       ),
-
       GoRoute(
         path: '/quiz/:quizSetId',
         builder: (context, state) {
           final quizSetId =
               state.pathParameters['quizSetId']!;
-
           return QuizScreen(
             quizSetId: quizSetId,
             session: context.read<QuizProvider>().session,
           );
         },
       ),
-
       GoRoute(
         path: '/result',
         builder: (context, state) {
           return const ResultScreen();
         },
       ),
-
       GoRoute(
         path: '/review',
         builder: (context, state) {
