@@ -52,9 +52,22 @@ class _QuizSetScreenState extends State<QuizSetScreen> {
                         quizSet.name,
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
+
+                      subtitle: quizSet.lastAttempt == null
+                          ? const Text(
+                              'Not attempted yet',
+                              style: TextStyle(color: Colors.grey),
+                            )
+                          : Text(
+                              'Last Score: ${quizSet.lastAttempt!.score}  •  '
+                              'Accuracy: ${quizSet.lastAttempt!.accuracy.toStringAsFixed(0)}%',
+                            ),
+
                       trailing: const Icon(Icons.quiz_outlined),
+
                       onTap: () {
                         context.read<QuizProvider>().setQuizSet(quizSet.id);
+
                         context.push('/quiz-instruction/${quizSet.id}');
                       },
                     ),
