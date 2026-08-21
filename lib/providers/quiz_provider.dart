@@ -252,6 +252,10 @@ class QuizProvider extends ChangeNotifier {
   // =========================
 
   void selectAnswer(String questionId, int selectedIndex) {
+    // Do not allow answer changes while submitting
+    if (_isSubmittingQuiz) {
+      return;
+    }
     _userAnswers[questionId] = selectedIndex;
 
     notifyListeners();
@@ -360,7 +364,9 @@ class QuizProvider extends ChangeNotifier {
           totalQuestions: _questions.length,
           correctAnswers: correctAnswers,
           wrongAnswers: wrongAnswers,
-          percentage: _questions.isEmpty ? 0 : (correctAnswers / _questions.length) * 100,
+          percentage: _questions.isEmpty
+              ? 0
+              : (correctAnswers / _questions.length) * 100,
         );
       }
       _error = e.toString();
