@@ -23,11 +23,28 @@ class _QuizScreenState extends State<QuizScreen> {
   late InterstitialAdService _interstitialAdService;
   final ScrollController _scrollController = ScrollController();
   bool _timerStarted = false;
+  final ScrollController _questionNumberController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     WakelockPlus.enable();
+  }
+
+  void _scrollToCurrentQuestion(int index) {
+    const double itemWidth = 48.0;
+
+    final targetOffset = index * itemWidth;
+
+    final maxOffset = _questionNumberController.position.maxScrollExtent;
+
+    final offset = targetOffset.clamp(0.0, maxOffset);
+
+    _questionNumberController.animateTo(
+      offset,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
@@ -48,6 +65,7 @@ class _QuizScreenState extends State<QuizScreen> {
     _quizProvider.stopTimer();
 
     _scrollController.dispose();
+    _questionNumberController.dispose();
     _timerStarted = false;
     super.dispose();
   }
@@ -63,12 +81,18 @@ class _QuizScreenState extends State<QuizScreen> {
     }
 
     provider.nextQuestion();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToCurrentQuestion(provider.currentQuestionIndex);
+    });
   }
 
   void _goToPreviousQuestion(QuizProvider provider) {
     _scrollController.jumpTo(0);
 
     provider.previousQuestion();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToCurrentQuestion(provider.currentQuestionIndex);
+    });
   }
 
   @override
@@ -165,8 +189,9 @@ class _QuizScreenState extends State<QuizScreen> {
                         children: [
                           /// Question Number Navigation
                           SizedBox(
-                            height: 45,
+                            height: 40,
                             child: ListView.builder(
+                              controller: _questionNumberController,
                               scrollDirection: Axis.horizontal,
                               itemCount: provider.questions.length,
                               itemBuilder: (context, index) {
@@ -174,6 +199,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
                                 final isCurrent =
                                     provider.currentQuestionIndex == index;
+
                                 final isAnswered = provider.userAnswers
                                     .containsKey(question.id);
 
@@ -185,6 +211,11 @@ class _QuizScreenState extends State<QuizScreen> {
                                       ? null
                                       : () {
                                           provider.goToQuestion(index);
+
+                                          WidgetsBinding.instance
+                                              .addPostFrameCallback((_) {
+                                                _scrollToCurrentQuestion(index);
+                                              });
                                         },
                                   child: Container(
                                     width: 40,
@@ -193,7 +224,6 @@ class _QuizScreenState extends State<QuizScreen> {
                                     alignment: Alignment.center,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-
                                       color: isCurrent
                                           ? Colors.blue
                                           : isAnswered
