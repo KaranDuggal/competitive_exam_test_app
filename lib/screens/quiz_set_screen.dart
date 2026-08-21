@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../core/widgets/app_app_bar.dart';
@@ -47,29 +48,51 @@ class _QuizSetScreenState extends State<QuizSetScreen> {
                   final quizSet = quizProvider.quizSets[index];
                   return Card(
                     margin: const EdgeInsets.only(bottom: 12),
-                    child: ListTile(
-                      title: Text(
-                        quizSet.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                    child: SizedBox(
+                      height: 80,
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        title: Text(
+                          quizSet.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: quizSet.lastAttempt == null
+                            ? const Text(
+                                'Not attempted yet',
+                                style: TextStyle(color: Colors.grey),
+                              )
+                            : Text(
+                                'Last Score: ${quizSet.lastAttempt!.score}  •  '
+                                'Accuracy: ${quizSet.lastAttempt!.accuracy.toStringAsFixed(0)}%',
+                              ),
+                        trailing: quizSet.lastAttempt == null
+                            ? const Icon(Icons.arrow_forward_ios)
+                            : CircularPercentIndicator(
+                                radius: 26,
+                                lineWidth: 6,
+                                animation: true,
+                                circularStrokeCap: CircularStrokeCap.round,
+                                percent: (quizSet.lastAttempt!.accuracy / 100)
+                                    .clamp(0.0, 1.0),
+                                progressColor: Colors.green,
+                                backgroundColor: Colors.grey.shade300,
+                                center: Text(
+                                  '${quizSet.lastAttempt!.accuracy.toInt()}%',
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                        onTap: () {
+                          context.read<QuizProvider>().setQuizSet(quizSet.id);
+
+                          context.push('/quiz-instruction/${quizSet.id}');
+                        },
                       ),
-
-                      subtitle: quizSet.lastAttempt == null
-                          ? const Text(
-                              'Not attempted yet',
-                              style: TextStyle(color: Colors.grey),
-                            )
-                          : Text(
-                              'Last Score: ${quizSet.lastAttempt!.score}  •  '
-                              'Accuracy: ${quizSet.lastAttempt!.accuracy.toStringAsFixed(0)}%',
-                            ),
-
-                      trailing: const Icon(Icons.quiz_outlined),
-
-                      onTap: () {
-                        context.read<QuizProvider>().setQuizSet(quizSet.id);
-
-                        context.push('/quiz-instruction/${quizSet.id}');
-                      },
                     ),
                   );
                 },
