@@ -1,3 +1,4 @@
+import 'package:exam_jyoti/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +28,7 @@ class _QuizSetScreenState extends State<QuizSetScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isLoggedIn = context.watch<AuthProvider>().isLoggedIn;
     return Scaffold(
       appBar: const AppAppBar(title: 'Quiz Sets'),
       body: NetworkRefreshWrapper(
@@ -60,8 +62,8 @@ class _QuizSetScreenState extends State<QuizSetScreen> {
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: quizSet.lastAttempt == null
-                            ? const Text(
-                                'Not attempted yet',
+                            ? Text(
+                                isLoggedIn ? 'Not attempted yet' : 'Login to the application to see your last attempt score.',
                                 style: TextStyle(color: Colors.grey),
                               )
                             : Text(
@@ -69,7 +71,7 @@ class _QuizSetScreenState extends State<QuizSetScreen> {
                                 'Accuracy: ${quizSet.lastAttempt!.accuracy.toStringAsFixed(0)}%',
                               ),
                         trailing: quizSet.lastAttempt == null
-                            ? const Icon(Icons.arrow_forward_ios)
+                            ? null
                             : CircularPercentIndicator(
                                 radius: 26,
                                 lineWidth: 6,
@@ -89,7 +91,6 @@ class _QuizSetScreenState extends State<QuizSetScreen> {
                               ),
                         onTap: () {
                           context.read<QuizProvider>().setQuizSet(quizSet.id);
-
                           context.push('/quiz-instruction/${quizSet.id}');
                         },
                       ),
