@@ -223,29 +223,25 @@ class QuizProvider extends ChangeNotifier {
   // =========================
 
   Future<void> loadQuestions(String quizSetId) async {
-    _isLoading = true;
-    // Clear old quiz set's questions
+  _isLoading = true;
+  _error = null;
+
+  notifyListeners();
+
+  try {
+    _questions = await _repository.getQuestions(quizSetId);
+
+    _currentQuestionIndex = 0;
+    _userAnswers = {};
+    _skippedQuestions.clear();
+  } catch (e) {
     _questions = [];
-    _error = null;
-
+    _error = e.toString();
+  } finally {
+    _isLoading = false;
     notifyListeners();
-
-    try {
-      _questions = await _repository.getQuestions(quizSetId);
-
-      _currentQuestionIndex = 0;
-
-      _userAnswers = {};
-    } catch (e) {
-      _questions = [];
-
-      _error = e.toString();
-    } finally {
-      _isLoading = false;
-
-      notifyListeners();
-    }
   }
+}
 
   // =========================
   // SELECT ANSWER
@@ -257,9 +253,32 @@ class QuizProvider extends ChangeNotifier {
       return;
     }
     _userAnswers[questionId] = selectedIndex;
+_skippedQuestions.remove(questionId);
+    notifyListeners();
+  }
+
+  void goToQuestion(int index) {
+    if (_isSubmittingQuiz) {
+      return;
+    }
+
+    if (index < 0 || index >= _questions.length) {
+      return;
+    }
+
+    _currentQuestionIndex = index;
 
     notifyListeners();
   }
+
+  final Set<String> _skippedQuestions = {};
+
+Set<String> get skippedQuestions => _skippedQuestions;
+
+void markQuestionAsSkipped(String questionId) {
+  _skippedQuestions.add(questionId);
+  notifyListeners();
+}
 
   // =========================
   // NEXT QUESTION

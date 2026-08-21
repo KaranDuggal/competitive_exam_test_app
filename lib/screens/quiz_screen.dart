@@ -54,6 +54,13 @@ class _QuizScreenState extends State<QuizScreen> {
 
   void _goToNextQuestion(QuizProvider provider) {
     _scrollController.jumpTo(0);
+    final question = provider.questions[provider.currentQuestionIndex];
+
+    final isAnswered = provider.userAnswers.containsKey(question.id);
+
+    if (!isAnswered) {
+      provider.markQuestionAsSkipped(question.id);
+    }
 
     provider.nextQuestion();
   }
@@ -156,15 +163,75 @@ class _QuizScreenState extends State<QuizScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          /// Question Number Navigation
+                          SizedBox(
+                            height: 45,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: provider.questions.length,
+                              itemBuilder: (context, index) {
+                                final question = provider.questions[index];
+
+                                final isCurrent =
+                                    provider.currentQuestionIndex == index;
+                                final isAnswered = provider.userAnswers
+                                    .containsKey(question.id);
+
+                                final isSkipped = provider.skippedQuestions
+                                    .contains(question.id);
+
+                                return GestureDetector(
+                                  onTap: provider.isSubmittingQuiz
+                                      ? null
+                                      : () {
+                                          provider.goToQuestion(index);
+                                        },
+                                  child: Container(
+                                    width: 40,
+                                    height: 40,
+                                    margin: const EdgeInsets.only(right: 8),
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+
+                                      color: isCurrent
+                                          ? Colors.blue
+                                          : isAnswered
+                                          ? Colors.green
+                                          : isSkipped
+                                          ? Colors.red
+                                          : Colors.grey.shade300,
+                                    ),
+                                    child: Text(
+                                      '${index + 1}',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color:
+                                            isCurrent || isAnswered || isSkipped
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          /// Quiz Progress
                           LinearProgressIndicator(
                             value:
                                 (provider.currentQuestionIndex + 1) /
                                 provider.questions.length,
+
                             borderRadius: BorderRadius.circular(10),
                           ),
 
                           const SizedBox(height: 24),
 
+                          /// Question
                           Text(
                             question.text,
                             style: const TextStyle(
@@ -176,40 +243,59 @@ class _QuizScreenState extends State<QuizScreen> {
 
                           const SizedBox(height: 24),
 
+                          /// Options
                           ...List.generate(question.options.length, (index) {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 12),
+
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(14),
-                                onTap: () {
-                                  provider.selectAnswer(question.id, index);
-                                },
+
+                                onTap: provider.isSubmittingQuiz
+                                    ? null
+                                    : () {
+                                        provider.selectAnswer(
+                                          question.id,
+                                          index,
+                                        );
+                                      },
+
                                 child: Container(
                                   width: double.infinity,
+
                                   padding: const EdgeInsets.all(16),
+
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(14),
+
                                     border: Border.all(
                                       color: selectedIndex == index
                                           ? Colors.blue
                                           : Colors.grey.shade400,
+
                                       width: selectedIndex == index ? 2 : 1,
                                     ),
+
                                     color: selectedIndex == index
                                         ? Colors.blue.withOpacity(0.08)
                                         : null,
                                   ),
+
                                   child: Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
+
                                     children: [
                                       CircleAvatar(
                                         radius: 14,
+
                                         backgroundColor: selectedIndex == index
                                             ? Colors.blue
                                             : Colors.grey,
+
                                         child: Text(
                                           String.fromCharCode(65 + index),
+
                                           style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 12,
@@ -222,6 +308,7 @@ class _QuizScreenState extends State<QuizScreen> {
                                       Expanded(
                                         child: Text(
                                           question.options[index],
+
                                           style: const TextStyle(
                                             fontSize: 16,
                                             height: 1.5,
