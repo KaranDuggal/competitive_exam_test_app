@@ -174,7 +174,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     _interstitialAdService.show(
                       onFinished: () {
                         if (context.mounted) {
-                          context.go("/result");
+                          context.pushReplacement("/result");
                         }
                       },
                     );
@@ -410,7 +410,7 @@ class _QuizScreenState extends State<QuizScreen> {
                                     _interstitialAdService.show(
                                       onFinished: () {
                                         if (context.mounted) {
-                                          context.go("/result");
+                                          context.pushReplacement("/result");
                                         }
                                       },
                                     );

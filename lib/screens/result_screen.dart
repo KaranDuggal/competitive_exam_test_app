@@ -16,54 +16,77 @@ class ResultScreen extends StatelessWidget {
       return const Scaffold(body: Center(child: Text('No result found')));
     }
 
-    return Scaffold(
-      appBar: const AppAppBar(
-        title: 'Result',
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.stars, size: 80, color: Colors.amber),
-            const SizedBox(height: 20),
-            Text(
-              '${result.percentage.toStringAsFixed(1)}%',
-              style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              result.percentage >= 50 ? 'Well Done!' : 'Keep Practicing!',
-              style: const TextStyle(fontSize: 24),
-            ),
-            const SizedBox(height: 40),
-            _buildResultRow('Total Questions', result.totalQuestions.toString()),
-            _buildResultRow('Correct Answers', result.correctAnswers.toString(), Colors.green),
-            _buildResultRow('Wrong Answers', result.wrongAnswers.toString(), Colors.red),
-            const SizedBox(height: 60),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => context.go('/'),
-                    child: const Text('Home'),
-                  ),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          return;
+        }
+        context.pushReplacement(
+          '/quiz-sets/${context.read<QuizProvider>().session.chapterId}',
+        );
+      },
+      child: Scaffold(
+        appBar: const AppAppBar(title: 'Result'),
+        body: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.stars, size: 80, color: Colors.amber),
+              const SizedBox(height: 20),
+              Text(
+                '${result.percentage.toStringAsFixed(1)}%',
+                style: const TextStyle(
+                  fontSize: 48,
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => context.push('/review'),
-                    child: const Text('Review'),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                result.percentage >= 50 ? 'Well Done!' : 'Keep Practicing!',
+                style: const TextStyle(fontSize: 24),
+              ),
+              const SizedBox(height: 40),
+              _buildResultRow(
+                'Total Questions',
+                result.totalQuestions.toString(),
+              ),
+              _buildResultRow(
+                'Correct Answers',
+                result.correctAnswers.toString(),
+                Colors.green,
+              ),
+              _buildResultRow(
+                'Wrong Answers',
+                result.wrongAnswers.toString(),
+                Colors.red,
+              ),
+              const SizedBox(height: 60),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => context.go('/'),
+                      child: const Text('Home'),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => context.push('/review'),
+                      child: const Text('Review'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
-      bottomNavigationBar: const Material(
-        elevation: 8,
-        child: SafeArea(child: BannerAdWidget()),
+        bottomNavigationBar: const Material(
+          elevation: 8,
+          child: SafeArea(child: BannerAdWidget()),
+        ),
       ),
     );
   }
@@ -77,7 +100,11 @@ class ResultScreen extends StatelessWidget {
           Text(label, style: const TextStyle(fontSize: 18)),
           Text(
             value,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
           ),
         ],
       ),
