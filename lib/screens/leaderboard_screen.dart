@@ -202,7 +202,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                           width: 40,
                                           height: 40,
                                           fit: BoxFit.cover,
-                                          errorBuilder: (_, __, ___) {
+                                          errorBuilder: (_, _, _) {
                                             return const Icon(Icons.person);
                                           },
                                         )
