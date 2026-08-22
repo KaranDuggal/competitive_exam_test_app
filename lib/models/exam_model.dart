@@ -1,19 +1,19 @@
 class ExamModel {
   final String id;
   final String name;
-  final String icon;
+  final String? image;
 
   ExamModel({
     required this.id,
     required this.name,
-    this.icon = '📝',
+    this.image,
   });
 
   factory ExamModel.fromJson(Map<String, dynamic> json) {
     return ExamModel(
       id: json['id'],
       name: json['name'],
-      icon: json['icon'] ?? '📝',
+      image: json['image'] ?? '📝',
     );
   }
 
@@ -21,7 +21,7 @@ class ExamModel {
     return {
       'id': id,
       'name': name,
-      'icon': icon,
+      'image': image,
     };
   }
 }

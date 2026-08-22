@@ -1,3 +1,4 @@
+import 'package:exam_jyoti/core/utils/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -16,16 +17,36 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  static const String _baseUrl = AppConfig.baseUrl;
+
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => context.read<HomeProvider>().fetchExams());
+    Future.microtask(
+      () => context.read<HomeProvider>().fetchExams(),
+    );
+  }
+
+  String? _getImageUrl(String? image) {
+    if (image == null || image.isEmpty) {
+      return null;
+    }
+
+    if (image.startsWith('http://') ||
+        image.startsWith('https://')) {
+      return image;
+    }
+
+    return '$_baseUrl$image';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppAppBar(title: 'Exam Jyoti', showThemeButton: true),
+      appBar: const AppAppBar(
+        title: 'Exam Jyoti',
+        showThemeButton: true,
+      ),
       body: NetworkRefreshWrapper(
         onInternetRestored: () async {
           await context.read<HomeProvider>().fetchExams();
@@ -42,7 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.all(16.0),
                 child: GridView.builder(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate:
+                      const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
@@ -51,9 +73,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemCount: controller.exams.length,
                   itemBuilder: (context, index) {
                     final exam = controller.exams[index];
+                    final imageUrl = _getImageUrl(exam.image);
+
                     return GestureDetector(
                       onTap: () {
-                        context.read<QuizProvider>().setExam(exam.id);
+                        context
+                            .read<QuizProvider>()
+                            .setExam(exam.id);
+
                         context.push('/subjects/${exam.id}');
                       },
                       child: Card(
@@ -64,14 +91,36 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              exam.icon,
-                              style: const TextStyle(fontSize: 40),
-                            ),
+                            if (imageUrl != null)
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.network(
+                                  imageUrl,
+                                  width: 70,
+                                  height: 70,
+                                  fit: BoxFit.cover,
+                                  errorBuilder:
+                                      (context, error, stackTrace) {
+                                    return const Icon(
+                                      Icons.school_outlined,
+                                      size: 60,
+                                    );
+                                  },
+                                ),
+                              )
+                            else
+                              const Icon(
+                                Icons.school_outlined,
+                                size: 60,
+                              ),
+
                             const SizedBox(height: 10),
+
                             Text(
                               exam.name,
                               textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -90,7 +139,9 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: const Material(
         elevation: 8,
-        child: SafeArea(child: BannerAdWidget()),
+        child: SafeArea(
+          child: BannerAdWidget(),
+        ),
       ),
     );
   }
