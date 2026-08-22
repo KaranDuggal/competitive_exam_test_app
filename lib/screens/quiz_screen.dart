@@ -32,16 +32,24 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   void _scrollToCurrentQuestion(int index) {
+    if (!_questionNumberController.hasClients) {
+      return;
+    }
     const double itemWidth = 48.0;
-
-    final targetOffset = index * itemWidth;
-
+    double targetOffset;
+    if (index <= 3) {
+      // Questions 1–4:
+      // Always return the number bar completely to the left.
+      targetOffset = 0;
+    } else {
+      // Question 5 onward:
+      // Keep the current question around the 4th position.
+      targetOffset = (index - 3) * itemWidth;
+    }
     final maxOffset = _questionNumberController.position.maxScrollExtent;
-
-    final offset = targetOffset.clamp(0.0, maxOffset);
-
+    targetOffset = targetOffset.clamp(0.0, maxOffset);
     _questionNumberController.animateTo(
-      offset,
+      targetOffset,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
