@@ -35,6 +35,11 @@ class _QuizInstructionScreenState extends State<QuizInstructionScreen> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
+            Text(
+              '${widget.session.questionCount} Questions',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 24),
             _buildInstructionItem(
               Icons.help_outline,
               'Read questions carefully',
@@ -78,10 +83,16 @@ class _QuizInstructionScreenState extends State<QuizInstructionScreen> {
                 onPressed: () async {
                   final provider = context.read<QuizProvider>();
                   await provider.loadQuestions(widget.session.quizSetId ?? '');
-                  context.read<QuizProvider>().setQuizConfiguration(quizDuration: _minutesPerQuestion.toInt() * 60 * provider.questions.length, timePerQuestion: _minutesPerQuestion.toInt());
+                  context.read<QuizProvider>().setQuizConfiguration(
+                    quizDuration:
+                        _minutesPerQuestion.toInt() *
+                        60 *
+                        provider.questions.length,
+                    timePerQuestion: _minutesPerQuestion.toInt(),
+                  );
                   provider.startTimer(
                     totalQuestions: provider.questions.length,
-                    minutesPerQuestion:_minutesPerQuestion.toInt(),
+                    minutesPerQuestion: _minutesPerQuestion.toInt(),
                     onTimeUp: () async {
                       await provider.submitQuiz();
                     },

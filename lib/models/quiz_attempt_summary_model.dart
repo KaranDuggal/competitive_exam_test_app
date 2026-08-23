@@ -19,16 +19,31 @@ class QuizAttemptSummaryModel {
     required this.attemptedAt,
   });
 
-  factory QuizAttemptSummaryModel.fromJson(Map<String, dynamic> json) {
+  factory QuizAttemptSummaryModel.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return QuizAttemptSummaryModel(
-      score: json['score'],
-      accuracy: (json['accuracy'] as num).toDouble(),
-      pointsEarned: json['pointsEarned'],
-      correctAnswers: json['correctAnswers'],
-      wrongAnswers: json['wrongAnswers'],
-      skippedAnswers: json['skippedAnswers'],
-      timeTaken: json['timeTaken'],
-      attemptedAt: DateTime.parse(json['attemptedAt']),
+      score: (json['score'] as num?)?.toInt() ?? 0,
+
+      accuracy: (json['accuracy'] as num?)?.toDouble() ?? 0.0,
+
+      pointsEarned:
+          (json['pointsEarned'] as num?)?.toInt() ?? 0,
+
+      correctAnswers:
+          (json['correctAnswers'] as num?)?.toInt() ?? 0,
+
+      wrongAnswers:
+          (json['wrongAnswers'] as num?)?.toInt() ?? 0,
+
+      skippedAnswers:
+          (json['skippedAnswers'] as num?)?.toInt() ?? 0,
+
+      timeTaken:
+          (json['timeTaken'] as num?)?.toInt() ?? 0,
+
+      attemptedAt:
+          DateTime.parse(json['attemptedAt'] as String),
     );
   }
 

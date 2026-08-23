@@ -223,25 +223,22 @@ class QuizProvider extends ChangeNotifier {
   // =========================
 
   Future<void> loadQuestions(String quizSetId) async {
-  _isLoading = true;
-  _error = null;
-
-  notifyListeners();
-
-  try {
-    _questions = await _repository.getQuestions(quizSetId);
-
-    _currentQuestionIndex = 0;
-    _userAnswers = {};
-    _skippedQuestions.clear();
-  } catch (e) {
-    _questions = [];
-    _error = e.toString();
-  } finally {
-    _isLoading = false;
+    _isLoading = true;
+    _error = null;
     notifyListeners();
+    try {
+      _questions = await _repository.getQuestions(quizSetId);
+      _currentQuestionIndex = 0;
+      _userAnswers = {};
+      _skippedQuestions.clear();
+    } catch (e) {
+      _questions = [];
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
-}
 
   // =========================
   // SELECT ANSWER
@@ -253,7 +250,7 @@ class QuizProvider extends ChangeNotifier {
       return;
     }
     _userAnswers[questionId] = selectedIndex;
-_skippedQuestions.remove(questionId);
+    _skippedQuestions.remove(questionId);
     notifyListeners();
   }
 
@@ -273,12 +270,12 @@ _skippedQuestions.remove(questionId);
 
   final Set<String> _skippedQuestions = {};
 
-Set<String> get skippedQuestions => _skippedQuestions;
+  Set<String> get skippedQuestions => _skippedQuestions;
 
-void markQuestionAsSkipped(String questionId) {
-  _skippedQuestions.add(questionId);
-  notifyListeners();
-}
+  void markQuestionAsSkipped(String questionId) {
+    _skippedQuestions.add(questionId);
+    notifyListeners();
+  }
 
   // =========================
   // NEXT QUESTION
@@ -431,8 +428,11 @@ void markQuestionAsSkipped(String questionId) {
     notifyListeners();
   }
 
-  void setQuizSet(String quizSetId) {
-    _session = _session.copyWith(quizSetId: quizSetId);
+  void setQuizSet(String quizSetId, {int? questionCount}) {
+    _session = _session.copyWith(
+      quizSetId: quizSetId,
+      questionCount: questionCount,
+    );
 
     notifyListeners();
   }

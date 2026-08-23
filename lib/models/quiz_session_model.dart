@@ -5,6 +5,7 @@ class QuizSessionData {
   final String? quizSetId;
   final int timePerQuestion;
   final int? quizDuration;
+  final int? questionCount;
 
   const QuizSessionData({
     this.examId,
@@ -13,6 +14,7 @@ class QuizSessionData {
     this.quizSetId,
     this.timePerQuestion = 2,
     this.quizDuration,
+    this.questionCount,
   });
 
   QuizSessionData copyWith({
@@ -22,16 +24,16 @@ class QuizSessionData {
     String? quizSetId,
     int? timePerQuestion,
     int? quizDuration,
+    int? questionCount,
   }) {
     return QuizSessionData(
       examId: examId ?? this.examId,
       subjectId: subjectId ?? this.subjectId,
       chapterId: chapterId ?? this.chapterId,
       quizSetId: quizSetId ?? this.quizSetId,
-      timePerQuestion:
-          timePerQuestion ?? this.timePerQuestion,
-      quizDuration:
-          quizDuration ?? this.quizDuration,
+      timePerQuestion: timePerQuestion ?? this.timePerQuestion,
+      quizDuration: quizDuration ?? this.quizDuration,
+      questionCount: questionCount ?? this.questionCount,
     );
   }
 }

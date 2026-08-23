@@ -63,7 +63,9 @@ class _QuizSetScreenState extends State<QuizSetScreen> {
                         ),
                         subtitle: quizSet.lastAttempt == null
                             ? Text(
-                                isLoggedIn ? 'Not attempted yet' : 'Login to the application to see your last attempt score.',
+                                isLoggedIn
+                                    ? 'Not attempted yet'
+                                    : 'Login to the application to see your last attempt score.',
                                 style: TextStyle(color: Colors.grey),
                               )
                             : Text(
@@ -90,7 +92,10 @@ class _QuizSetScreenState extends State<QuizSetScreen> {
                                 ),
                               ),
                         onTap: () {
-                          context.read<QuizProvider>().setQuizSet(quizSet.id);
+                          context.read<QuizProvider>().setQuizSet(
+                            quizSet.id,
+                            questionCount: quizSet.questionCount,
+                          );
                           context.push('/quiz-instruction/${quizSet.id}');
                         },
                       ),
