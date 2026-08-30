@@ -8,6 +8,7 @@ import '../../models/leaderboard_response_model.dart';
 import '../../models/profile_model.dart';
 import '../../models/quiz_attempt_request_model.dart';
 import '../../models/quiz_attempt_response_model.dart';
+import '../../models/quiz_attempt_review_model.dart';
 import '../../models/subject_model.dart';
 import '../../models/chapter_model.dart';
 import '../../models/quiz_set_model.dart';
@@ -152,4 +153,21 @@ class ApiDataSource {
 
     return LeaderboardResponseModel.fromJson(response.data);
   }
+  Future<List<QuizAttemptReviewModel>> getQuizAttempt(
+  String attemptId,
+) async {
+  final response = await _dio.get(
+    '/quiz-attempts/$attemptId',
+  );
+
+  final data = response.data['data'] as List;
+
+  return data
+      .map(
+        (json) => QuizAttemptReviewModel.fromJson(
+          json,
+        ),
+      )
+      .toList();
+}
 }

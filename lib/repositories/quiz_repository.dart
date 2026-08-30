@@ -2,6 +2,7 @@ import '../models/auth_model.dart';
 import '../models/exam_model.dart';
 import '../models/quiz_attempt_request_model.dart';
 import '../models/quiz_attempt_response_model.dart';
+import '../models/quiz_attempt_review_model.dart';
 import '../models/subject_model.dart';
 import '../models/chapter_model.dart';
 import '../models/quiz_set_model.dart';
@@ -52,5 +53,9 @@ class QuizRepository {
     QuizAttemptRequestModel request,
   ) {
     return _apiDataSource.submitQuizAttempt(request);
+  }
+
+  Future<List<QuizAttemptReviewModel>> getQuizAttempt(String attemptId) {
+    return _apiDataSource.getQuizAttempt(attemptId);
   }
 }

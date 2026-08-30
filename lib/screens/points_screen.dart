@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 
@@ -6,6 +7,7 @@ import '../core/widgets/banner_ad_widget.dart';
 import '../core/widgets/google_login_button.dart';
 import '../providers/auth_provider.dart';
 import '../providers/profile_provider.dart';
+import '../providers/quiz_provider.dart';
 
 class PointsScreen extends StatefulWidget {
   const PointsScreen({super.key});
@@ -231,9 +233,27 @@ class _PointsScreenState extends State<PointsScreen> {
 
                             const SizedBox(height: 14),
 
-                            Text(
-                              formatDate(attempt.attemptedAt),
-                              style: TextStyle(color: Colors.grey.shade600),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  formatDate(attempt.attemptedAt),
+                                  style: TextStyle(color: Colors.grey.shade600),
+                                ),
+
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    final quizProvider = context.read<QuizProvider>();
+                                    quizProvider.loadAttemptForReview(attempt.id,);
+                                    context.push('/quiz-attempt-review/${attempt.id}',);
+                                  },
+                                  icon: const Icon(
+                                    Icons.visibility_outlined,
+                                    size: 18,
+                                  ),
+                                  label: const Text('Review'),
+                                ),
+                              ],
                             ),
                           ],
                         ),

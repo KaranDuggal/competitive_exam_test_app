@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../providers/quiz_provider.dart';
+import '../../screens/quiz_attempt_review_screen.dart';
 import '../../screens/subject_screen.dart';
 import '../../screens/chapter_screen.dart';
 import '../../screens/quiz_set_screen.dart';
@@ -13,7 +14,6 @@ import '../../screens/review_screen.dart';
 import '../widgets/persistent_nav_bar.dart';
 
 class AppRouter {
-
   static final GlobalKey<NavigatorState> navigatorKey =
       GlobalKey<NavigatorState>();
 
@@ -30,40 +30,30 @@ class AppRouter {
       GoRoute(
         path: '/subjects/:examId',
         builder: (context, state) {
-          final examId =
-              state.pathParameters['examId']!;
+          final examId = state.pathParameters['examId']!;
 
-          return SubjectScreen(
-            examId: examId,
-          );
+          return SubjectScreen(examId: examId);
         },
       ),
       GoRoute(
         path: '/chapters/:subjectId',
         builder: (context, state) {
-          final subjectId =
-              state.pathParameters['subjectId']!;
+          final subjectId = state.pathParameters['subjectId']!;
 
-          return ChapterScreen(
-            subjectId: subjectId,
-          );
+          return ChapterScreen(subjectId: subjectId);
         },
       ),
       GoRoute(
         path: '/quiz-sets/:chapterId',
         builder: (context, state) {
-          final chapterId =
-              state.pathParameters['chapterId']!;
-          return QuizSetScreen(
-            chapterId: chapterId,
-          );
+          final chapterId = state.pathParameters['chapterId']!;
+          return QuizSetScreen(chapterId: chapterId);
         },
       ),
       GoRoute(
         path: '/quiz-instruction/:quizSetId',
         builder: (context, state) {
-          final quizSetId =
-              state.pathParameters['quizSetId']!;
+          final quizSetId = state.pathParameters['quizSetId']!;
           return QuizInstructionScreen(
             quizSetId: quizSetId,
             session: context.read<QuizProvider>().session,
@@ -73,8 +63,7 @@ class AppRouter {
       GoRoute(
         path: '/quiz/:quizSetId',
         builder: (context, state) {
-          final quizSetId =
-              state.pathParameters['quizSetId']!;
+          final quizSetId = state.pathParameters['quizSetId']!;
           return QuizScreen(
             quizSetId: quizSetId,
             session: context.read<QuizProvider>().session,
@@ -91,6 +80,13 @@ class AppRouter {
         path: '/review',
         builder: (context, state) {
           return const ReviewScreen();
+        },
+      ),
+      GoRoute(
+        path: '/quiz-attempt-review/:attemptId',
+        builder: (context, state) {
+          final attemptId = state.pathParameters['attemptId']!;
+          return QuizAttemptReviewScreen(attemptId: attemptId);
         },
       ),
     ],

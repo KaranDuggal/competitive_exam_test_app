@@ -7,6 +7,7 @@ import '../models/chapter_model.dart';
 import '../models/question_model.dart';
 import '../models/quiz_attempt_request_model.dart';
 import '../models/quiz_attempt_response_model.dart';
+import '../models/quiz_attempt_review_model.dart';
 import '../models/quiz_set_model.dart';
 import '../models/result_model.dart';
 import '../models/subject_model.dart';
@@ -82,6 +83,22 @@ class QuizProvider extends ChangeNotifier {
   QuizAttemptResponseModel? get quizAttemptResponse => _quizAttemptResponse;
 
   ResultModel? get lastResult => _lastResult;
+
+  // =========================
+  // QUIZ REVIEW
+  // =========================
+
+  List<QuizAttemptReviewModel> _reviewAnswers = [];
+
+  List<QuizAttemptReviewModel> get reviewAnswers => _reviewAnswers;
+
+  bool _isReviewLoading = false;
+
+  bool get isReviewLoading => _isReviewLoading;
+
+  String? _reviewError;
+
+  String? get reviewError => _reviewError;
 
   // =========================
   // LOADING & ERROR
@@ -445,6 +462,37 @@ class QuizProvider extends ChangeNotifier {
       timePerQuestion: timePerQuestion,
       quizDuration: quizDuration,
     );
+
+    notifyListeners();
+  }
+
+  // =========================
+  // LOAD QUIZ ATTEMPT FOR REVIEW
+  // =========================
+
+  Future<void> loadAttemptForReview(String attemptId) async {
+    _isReviewLoading = true;
+    _reviewError = null;
+    _reviewAnswers = [];
+
+    notifyListeners();
+
+    try {
+      _reviewAnswers = await _repository.getQuizAttempt(attemptId);
+    } catch (e) {
+      _reviewError = e.toString();
+      _reviewAnswers = [];
+
+      debugPrint('Failed to load quiz attempt for review: $e');
+    } finally {
+      _isReviewLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void clearReview() {
+    _reviewAnswers = [];
+    _reviewError = null;
 
     notifyListeners();
   }
