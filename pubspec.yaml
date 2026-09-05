@@ -100,21 +100,21 @@ flutter:
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path: "assets/images/exam_jyoti_logo.png"
+  image_path: "assets/images/app_icon.png"
 
 flutter_native_splash:
   color: "#FFFFFF"
-  image: assets/images/exam_jyoti_logo.png
+  image: assets/images/app_icon.png
 
   color_dark: "#121212"
-  image_dark: assets/images/exam_jyoti_logo.png
+  image_dark: assets/images/app_icon.png
 
   android: true
   ios: true
 
   android_12:
     color: "#FFFFFF"
-    image: assets/images/exam_jyoti_logo.png
+    image: assets/images/app_icon.png
 
     color_dark: "#121212"
-    image_dark: assets/images/exam_jyoti_logo.png
+    image_dark: assets/images/app_icon.png
