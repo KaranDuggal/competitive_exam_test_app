@@ -1,4 +1,4 @@
-package com.example.exam_jyoti
+package com.ksvh.ksvh_exam_scholar
 
 import io.flutter.embedding.android.FlutterActivity
 
