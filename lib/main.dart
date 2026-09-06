@@ -84,7 +84,7 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeProvider>(
       builder: (context, themeController, child) {
         return MaterialApp.router(
-          title: 'Exam Jyoti',
+          title: 'KSVH Exam Scholar',
           debugShowCheckedModeBanner: false,
           theme: AppThemes.lightTheme,
           darkTheme: AppThemes.darkTheme,

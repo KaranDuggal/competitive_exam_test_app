@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:exam_jyoti/core/utils/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,9 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(
-      () => context.read<HomeProvider>().fetchExams(),
-    );
+    Future.microtask(() => context.read<HomeProvider>().fetchExams());
   }
 
   String? _getImageUrl(String? image) {
@@ -32,8 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
       return null;
     }
 
-    if (image.startsWith('http://') ||
-        image.startsWith('https://')) {
+    if (image.startsWith('http://') || image.startsWith('https://')) {
       return image;
     }
 
@@ -43,10 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppAppBar(
-        title: 'Exam Jyoti',
-        showThemeButton: true,
-      ),
+      appBar: const AppAppBar(title: 'Exam Jyoti', showThemeButton: true),
       body: NetworkRefreshWrapper(
         onInternetRestored: () async {
           await context.read<HomeProvider>().fetchExams();
@@ -63,8 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.all(16.0),
                 child: GridView.builder(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
@@ -77,10 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     return GestureDetector(
                       onTap: () {
-                        context
-                            .read<QuizProvider>()
-                            .setExam(exam.id);
-
+                        context.read<QuizProvider>().setExam(exam.id);
                         context.push('/subjects/${exam.id}');
                       },
                       child: Card(
@@ -94,13 +85,23 @@ class _HomeScreenState extends State<HomeScreen> {
                             if (imageUrl != null)
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
-                                child: Image.network(
-                                  imageUrl,
+                                child: CachedNetworkImage(
+                                  imageUrl: imageUrl,
                                   width: 70,
                                   height: 70,
                                   fit: BoxFit.cover,
-                                  errorBuilder:
-                                      (context, error, stackTrace) {
+                                  placeholder: (context, url) {
+                                    return const SizedBox(
+                                      width: 70,
+                                      height: 70,
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  errorWidget: (context, url, error) {
                                     return const Icon(
                                       Icons.school_outlined,
                                       size: 60,
@@ -108,14 +109,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   },
                                 ),
                               )
-                            else
-                              const Icon(
-                                Icons.school_outlined,
-                                size: 60,
-                              ),
-
+                            else const Icon(Icons.school_outlined, size: 60),
                             const SizedBox(height: 10),
-
                             Text(
                               exam.name,
                               textAlign: TextAlign.center,
@@ -139,9 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: const Material(
         elevation: 8,
-        child: SafeArea(
-          child: BannerAdWidget(),
-        ),
+        child: SafeArea(child: BannerAdWidget()),
       ),
     );
   }
