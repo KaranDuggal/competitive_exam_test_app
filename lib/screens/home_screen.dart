@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppAppBar(title: 'Exam Jyoti', showThemeButton: true),
+      appBar: const AppAppBar(title: AppConfig.appName, showThemeButton: true),
       body: NetworkRefreshWrapper(
         onInternetRestored: () async {
           await context.read<HomeProvider>().fetchExams();
