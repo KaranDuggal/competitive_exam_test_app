@@ -1,4 +1,4 @@
-clear && flutter clean && flutter pub get && flutter build apk
+clear && flutter clean && flutter pub get && flutter build apk  --release
 Analyze the image, don't rely solely on OCR. Extract MCQs and convert to JSON.
 google login detail
 {displayName: jon , email: duga0@gmail.com, id: 116134362320988, photoUrl: https://lh3.googleusercontent.com/a/ACg8ocIG88w2232323Inz6MZiaj}
