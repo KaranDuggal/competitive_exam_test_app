@@ -30,6 +30,14 @@
           }
         },
         {
+          "client_id": "853786654754-v4i01gfk37uqqq58sp5eop3cbuvclaku.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ksvh.ksvh_exam_scholar",
+            "certificate_hash": "b87d4058cf6a558397504d8b152ce03521bfabf3"
+          }
+        },
+        {
           "client_id": "853786654754-sd5c03n8f8clqbrtg1oe7db2ivav6cj1.apps.googleusercontent.com",
           "client_type": 3
         }
