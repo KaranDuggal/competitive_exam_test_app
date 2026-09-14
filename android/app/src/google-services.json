@@ -14,11 +14,27 @@
       },
       "oauth_client": [
         {
+          "client_id": "853786654754-3qh3kg2ifgnei6bgrc7mvlnkj84e3ckj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ksvh.ksvh_exam_scholar",
+            "certificate_hash": "78d4e1b5dae7b0731a7c2f445d23517a32f00c02"
+          }
+        },
+        {
           "client_id": "853786654754-5onnlguktcq10sm2bnttb0a1c7r39nvj.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.ksvh.ksvh_exam_scholar",
             "certificate_hash": "377cb734f36ef0d150c3225bafb7eea92c27d3f1"
+          }
+        },
+        {
+          "client_id": "853786654754-djqjs9e2dotg60rhk2npom9rn4953k6p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ksvh.ksvh_exam_scholar",
+            "certificate_hash": "1e0a76f56bbca16c2fa076f8c1adbf447b5431a5"
           }
         },
         {
