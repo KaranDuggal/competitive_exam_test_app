@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import '../core/services/auth_service.dart';
 import '../core/services/token_service.dart';
 import '../models/auth_model.dart';
@@ -29,21 +28,19 @@ class AuthProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      final GoogleSignInAccount? googleUser = await _authService.signIn();
+      final googleUser = await _authService.signIn();
       if (googleUser == null) {
-        _isLoading = false;
-        notifyListeners();
         return;
       }
       final AuthModel response = await _repository.googleLogin(
         googleId: googleUser.id,
-        name: googleUser.displayName ?? '',
+        name: googleUser.name,
         email: googleUser.email,
         photoUrl: googleUser.photoUrl,
       );
       _token = response.token;
       _user = UserSessionModel(
-        name: googleUser.displayName ?? '',
+        name: googleUser.name,
         email: googleUser.email,
         photoUrl: googleUser.photoUrl,
       );
@@ -52,9 +49,9 @@ class AuthProvider extends ChangeNotifier {
       await TokenService.saveUser(_user!);
     } catch (e) {
       debugPrint(e.toString());
+      rethrow;
     } finally {
       _isLoading = false;
-
       notifyListeners();
     }
   }

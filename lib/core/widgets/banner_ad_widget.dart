@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -15,11 +18,14 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
 
   bool _isLoaded = false;
 
+  bool get _isSupported => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+
   @override
   void initState() {
     super.initState();
-
-    _loadBanner();
+    if (_isSupported) {
+      _loadBanner();
+    }
   }
 
   void _loadBanner() {
@@ -60,7 +66,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_isLoaded || _bannerAd == null) {
+    if (!_isSupported || !_isLoaded || _bannerAd == null) {
       return const SizedBox.shrink();
     }
 

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:exam_jyoti/core/services/ad_helper.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -7,8 +9,10 @@ class InterstitialAdService {
 
   bool _isLoading = false;
 
+  bool get _isSupported => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+
   void load() {
-    if (_isLoading || _interstitialAd != null) {
+    if (!_isSupported || _isLoading || _interstitialAd != null) {
       return;
     }
 

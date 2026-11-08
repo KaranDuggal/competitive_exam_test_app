@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
@@ -19,30 +22,37 @@ import 'core/router/app_router.dart';
 import 'core/utils/app_config.dart';
 import 'core/services/connectivity_service.dart';
 
+bool get _supportsMobileAds =>
+    !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await MobileAds.instance.initialize();
+  if (_supportsMobileAds) {
+    await MobileAds.instance.initialize();
+  }
   final prefs = await SharedPreferences.getInstance();
   
   // Step 1: Create temporary API data source (without authProvider yet)
   final tempApiDataSource = ApiDataSource(baseUrl: AppConfig.baseUrl);
-  
+
   // Step 2: Create repositories using temp data source
   final quizRepository = QuizRepository(apiDataSource: tempApiDataSource);
   final authRepository = AuthRepository(apiDataSource: tempApiDataSource);
   final authProvider = AuthProvider(repository: authRepository);
   final leaderboardRepository = LeaderboardRepository(api: tempApiDataSource);
-  
+
   // Step 3: Now create the FINAL API data source WITH authProvider
   final apiDataSource = ApiDataSource(
     baseUrl: AppConfig.baseUrl,
-    authProvider: authProvider,  // ← PASS IT HERE
+    authProvider: authProvider, // ← PASS IT HERE
   );
 
   await authProvider.loadUserSession();
-  
+
   final interstitialAdService = InterstitialAdService();
-  interstitialAdService.load();
+  if (_supportsMobileAds) {
+    interstitialAdService.load();
+  }
   ConnectivityService.initialize();
 
   runApp(
@@ -65,7 +75,9 @@ void main() async {
         Provider<InterstitialAdService>(
           create: (_) {
             final service = InterstitialAdService();
-            service.load();
+            if (_supportsMobileAds) {
+              service.load();
+            }
             return service;
           },
           dispose: (_, service) => service.dispose(),
