@@ -1,6 +1,6 @@
 name: ksvh-exam-scholar
 base: core26
-version: '1.0.0+15'
+version: '1.0.0+16'
 summary: Mock tests for government competitive exams
 description: |
   KSVH Exam Scholar helps candidates prepare for government competitive
