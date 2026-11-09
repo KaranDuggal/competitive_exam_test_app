@@ -22,3 +22,7 @@ snapcraft pack
 sudo snap remove ksvh-exam-scholar
 sudo snap install --dangerous ./ksvh-exam-scholar_1.0.0+15_amd64.snap
 snap run ksvh-exam-scholar
+
+app publish
+snapcraft pack
+snapcraft upload --release=beta ./ksvh-exam-scholar_1.0.0+15_amd64.snap
