@@ -1,0 +1,76 @@
+name: ksvh-exam-scholar
+base: core26
+version: '1.0.0+14'
+summary: Mock tests for government competitive exams
+description: |
+  KSVH Exam Scholar helps candidates prepare for government competitive
+  examinations with mock tests in a desktop application.
+
+grade: stable
+confinement: strict
+
+plugs:
+  gpu-2604:
+    interface: content
+    target: $SNAP/gpu-2604
+    default-provider: mesa-2604
+
+apps:
+  ksvh-exam-scholar:
+    command-chain:
+      - bin/gpu-2604-wrapper
+    command: exam_jyoti
+    environment:
+      GLYCIN_DATA_DIR: $SNAP/usr/share
+      GDK_PIXBUF_MODULE_FILE: $SNAP/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders.cache
+      XDG_DATA_DIRS: $SNAP/usr/share:$XDG_DATA_DIRS
+    plugs:
+      - desktop
+      - desktop-legacy
+      - gpu-2604
+      - wayland
+      - x11
+      - network
+
+parts:
+  exam-jyoti:
+    plugin: flutter
+    source: .
+    flutter-channel: stable
+    flutter-target: lib/main.dart
+    build-packages:
+      - pkg-config
+      - libgtk-3-dev
+    override-build: |
+      rm -rf build/linux
+      craftctl default
+    override-prime: |
+      craftctl default
+      sed -i 's|^Exec=/usr/libexec/glycin-loaders/2+/|Exec=/snap/ksvh-exam-scholar/current/usr/libexec/glycin-loaders/2+/|' \
+        "$CRAFT_PRIME"/usr/share/glycin-loaders/2+/conf.d/*.conf
+      GDK_PIXBUF_QUERY_LOADERS=$(find "$CRAFT_PRIME/usr/lib" -name gdk-pixbuf-query-loaders -type f | head -n 1)
+      GDK_PIXBUF_LOADERS_DIR=$(find "$CRAFT_PRIME/usr/lib" -path '*/gdk-pixbuf-2.0/2.10.0/loaders' -type d | head -n 1)
+      if [ -n "$GDK_PIXBUF_QUERY_LOADERS" ] && [ -n "$GDK_PIXBUF_LOADERS_DIR" ] && [ -d "$GDK_PIXBUF_LOADERS_DIR" ]; then
+        "$GDK_PIXBUF_QUERY_LOADERS" "$GDK_PIXBUF_LOADERS_DIR"/*.so > "$GDK_PIXBUF_LOADERS_DIR/../loaders.cache"
+        sed -i "s|$CRAFT_PRIME|/snap/ksvh-exam-scholar/current|g" "$GDK_PIXBUF_LOADERS_DIR/../loaders.cache"
+      fi
+      "$CRAFT_PRIME/usr/bin/update-mime-database" "$CRAFT_PRIME/usr/share/mime"
+    stage-packages:
+      - libgtk-3-0
+      - libgdk-pixbuf-2.0-0
+      - libgdk-pixbuf2.0-common
+      - librsvg2-common
+      - shared-mime-info
+      - libblkid1
+      - liblzma5
+
+  gpu-2604:
+    after:
+      - exam-jyoti
+    source: https://github.com/canonical/gpu-snap.git
+    plugin: dump
+    override-prime: |
+      craftctl default
+      ${CRAFT_PART_SRC}/bin/gpu-2604-cleanup mesa-2604
+    prime:
+      - bin/gpu-2604-wrapper
