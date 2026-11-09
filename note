@@ -27,3 +27,4 @@ app publish
 update version in pubspec and snapcraft
 snapcraft pack
 snapcraft upload --release=beta ./ksvh-exam-scholar_1.0.0+17_amd64.snap
+./scripts/release_snap.sh 1.0.0+19
