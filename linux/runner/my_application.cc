@@ -10,6 +10,10 @@
 struct _MyApplication {
   GtkApplication parent_instance;
   char** dart_entrypoint_arguments;
+  GtkWidget* header_bar;
+  GdkScreen* titlebar_screen;
+  GtkCssProvider* titlebar_css_provider;
+  FlMethodChannel* theme_channel;
 };
 
 G_DEFINE_TYPE(MyApplication, my_application, GTK_TYPE_APPLICATION)
@@ -17,6 +21,73 @@ G_DEFINE_TYPE(MyApplication, my_application, GTK_TYPE_APPLICATION)
 // Called when first Flutter frame received.
 static void first_frame_cb(MyApplication* self, FlView* view) {
   gtk_widget_show(gtk_widget_get_toplevel(GTK_WIDGET(view)));
+}
+
+static gboolean set_titlebar_dark_mode(MyApplication* self,
+                                       gboolean is_dark,
+                                       GError** error) {
+  if (self->titlebar_css_provider == nullptr) {
+    return TRUE;
+  }
+
+  const gchar* css = is_dark
+                         ? "headerbar, headerbar.titlebar {"
+                           " background-color: #000000;"
+                           " background-image: none;"
+                           " color: #ffffff;"
+                           "}"
+                           "headerbar .title, headerbar button {"
+                           " color: #ffffff;"
+                           "}"
+                         : "headerbar, headerbar.titlebar {"
+                           " background-color: #ff9800;"
+                           " background-image: none;"
+                           " color: #ffffff;"
+                           "}"
+                           "headerbar .title, headerbar button {"
+                           " color: #ffffff;"
+                           "}";
+
+  if (!gtk_css_provider_load_from_data(self->titlebar_css_provider, css, -1,
+                                       error)) {
+    return FALSE;
+  }
+
+  gtk_style_context_reset_widgets(self->titlebar_screen);
+  if (self->header_bar != nullptr) {
+    gtk_widget_queue_draw(self->header_bar);
+  }
+  return TRUE;
+}
+
+static void theme_method_call_cb(FlMethodChannel* channel,
+                                 FlMethodCall* method_call,
+                                 gpointer user_data) {
+  MyApplication* self = MY_APPLICATION(user_data);
+  const gchar* method = fl_method_call_get_name(method_call);
+
+  if (g_strcmp0(method, "setDarkMode") != 0) {
+    fl_method_call_respond_not_implemented(method_call, nullptr);
+    return;
+  }
+
+  FlValue* args = fl_method_call_get_args(method_call);
+  if (args == nullptr || fl_value_get_type(args) != FL_VALUE_TYPE_BOOL) {
+    fl_method_call_respond_error(method_call, "invalid_arguments",
+                                 "Expected a boolean dark-mode value.", nullptr,
+                                 nullptr);
+    return;
+  }
+
+  g_autoptr(GError) error = nullptr;
+  if (!set_titlebar_dark_mode(self, fl_value_get_bool(args), &error)) {
+    g_warning("Failed to update GTK title bar theme: %s", error->message);
+    fl_method_call_respond_error(method_call, "gtk_css_error", error->message,
+                                 nullptr, nullptr);
+    return;
+  }
+
+  fl_method_call_respond_success(method_call, nullptr, nullptr);
 }
 
 // Implements GApplication::activate.
@@ -47,6 +118,15 @@ static void my_application_activate(GApplication* application) {
     gtk_widget_show(GTK_WIDGET(header_bar));
     gtk_header_bar_set_title(header_bar, "KSVH Exam Scholar");
     gtk_header_bar_set_show_close_button(header_bar, TRUE);
+    self->header_bar = GTK_WIDGET(header_bar);
+    g_object_add_weak_pointer(G_OBJECT(header_bar),
+                              reinterpret_cast<gpointer*>(&self->header_bar));
+    self->titlebar_screen = GDK_SCREEN(
+        g_object_ref(gtk_widget_get_screen(GTK_WIDGET(window))));
+    self->titlebar_css_provider = gtk_css_provider_new();
+    gtk_style_context_add_provider_for_screen(
+        self->titlebar_screen, GTK_STYLE_PROVIDER(self->titlebar_css_provider),
+        GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     gtk_window_set_titlebar(window, GTK_WIDGET(header_bar));
   } else {
     gtk_window_set_title(window, "KSVH Exam Scholar");
@@ -59,6 +139,13 @@ static void my_application_activate(GApplication* application) {
       project, self->dart_entrypoint_arguments);
 
   FlView* view = fl_view_new(project);
+  g_autoptr(FlStandardMethodCodec) codec = fl_standard_method_codec_new();
+  self->theme_channel = fl_method_channel_new(
+      fl_engine_get_binary_messenger(fl_view_get_engine(view)), "ksvh/theme",
+      FL_METHOD_CODEC(codec));
+  fl_method_channel_set_method_call_handler(self->theme_channel,
+                                            theme_method_call_cb, self, nullptr);
+
   GdkRGBA background_color;
   // Background defaults to black, override it here if necessary, e.g. #00000000
   // for transparent.
@@ -120,6 +207,14 @@ static void my_application_shutdown(GApplication* application) {
 // Implements GObject::dispose.
 static void my_application_dispose(GObject* object) {
   MyApplication* self = MY_APPLICATION(object);
+  if (self->titlebar_screen != nullptr &&
+      self->titlebar_css_provider != nullptr) {
+    gtk_style_context_remove_provider_for_screen(
+        self->titlebar_screen, GTK_STYLE_PROVIDER(self->titlebar_css_provider));
+  }
+  g_clear_object(&self->theme_channel);
+  g_clear_object(&self->titlebar_css_provider);
+  g_clear_object(&self->titlebar_screen);
   g_clear_pointer(&self->dart_entrypoint_arguments, g_strfreev);
   G_OBJECT_CLASS(my_application_parent_class)->dispose(object);
 }
