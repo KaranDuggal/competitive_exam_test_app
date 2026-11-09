@@ -16,3 +16,9 @@ Initial release of KSVH Exam Scholar for closed testing. Includes practice quizz
 
 Linux
 GDK_BACKEND=x11 fvm flutter run -d linux
+
+build
+snapcraft pack
+sudo snap remove ksvh-exam-scholar
+sudo snap install --dangerous ./ksvh-exam-scholar_1.0.0+15_amd64.snap
+snap run ksvh-exam-scholar

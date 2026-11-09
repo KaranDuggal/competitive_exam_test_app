@@ -1,6 +1,6 @@
 name: ksvh-exam-scholar
 base: core26
-version: '1.0.0+14'
+version: '1.0.0+15'
 summary: Mock tests for government competitive exams
 description: |
   KSVH Exam Scholar helps candidates prepare for government competitive
@@ -20,6 +20,7 @@ apps:
     command-chain:
       - bin/gpu-2604-wrapper
     command: exam_jyoti
+    desktop: gui/ksvh-exam-scholar.desktop
     environment:
       GLYCIN_DATA_DIR: $SNAP/usr/share
       GDK_PIXBUF_MODULE_FILE: $SNAP/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders.cache
@@ -55,6 +56,8 @@ parts:
         sed -i "s|$CRAFT_PRIME|/snap/ksvh-exam-scholar/current|g" "$GDK_PIXBUF_LOADERS_DIR/../loaders.cache"
       fi
       "$CRAFT_PRIME/usr/bin/update-mime-database" "$CRAFT_PRIME/usr/share/mime"
+      install -Dm644 "$CRAFT_PROJECT_DIR/assets/images/app_icon.png" \
+        "$CRAFT_PRIME/meta/gui/icon.png"
     stage-packages:
       - libgtk-3-0
       - libgdk-pixbuf-2.0-0

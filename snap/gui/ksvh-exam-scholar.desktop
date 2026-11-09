@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=KSVH Exam Scholar
+Comment=Practice tests and mock exams for competitive examinations
+Exec=ksvh-exam-scholar
+Icon=${SNAP}/meta/gui/icon.png
+Terminal=false
+Type=Application
+Categories=Education;
+StartupWMClass=com.ksvh.ksvh_exam_scholar
